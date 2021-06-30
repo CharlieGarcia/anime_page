@@ -1,38 +1,40 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import _omit from 'lodash/omit';
-import AnimeList from '../components/AnimeList';
-import hanldeAnimeRequest from '../helpers/request';
+import { Link } from 'react-router-dom';
+import _get from 'lodash/get';
+import AnimeList from './AnimeList';
+import Pagination from './Pagination';
+import requestAnimeList from '../helpers/request';
 
 const ANIME_SEASONS = [
   "winter",
   "spring",
   "summer",
   "fall"
-],
-  ANIME_STATUS = [
-    'finished airing',
-    'currently airing',
-    'not yet aired',
-    'cancelled',
-  ],
-  ANIME_SORT = [
-    'id',
-    'score',
-    'popularity',
-    'start_date',
-    'end_dat',
-    'id-desc',
-    'score-desc',
-    'popularity-desc',
-    'start_date-desc',
-    'end_dat-desc'
-  ];
+];
+const ANIME_STATUS = [
+  'finished airing',
+  'currently airing',
+  'not yet aired',
+  'cancelled',
+];
+const ANIME_SORT = [
+  'id',
+  'score',
+  'popularity',
+  'start_date',
+  'end_dat',
+  'id-desc',
+  'score-desc',
+  'popularity-desc',
+  'start_date-desc',
+  'end_dat-desc'
+];
+const ITEMS_PER_PAGE = 10;
 
 
 function AnimeSelectOption({ list, handleChange, name }) {
   return (
-    <select onChange={handleChange} name={name}>
+    <select onChange={handleChange} onBlur={handleChange} name={name}>
       {list.map((item, index) =>
         <option value={item} key={index}>{item}</option>)}
     </select>
@@ -51,7 +53,8 @@ class Browse extends React.Component {
       full_page: true,
       sort: 'popularity',
       status: 'currently airing',
-      season: 'winter'
+      season: 'winter',
+      currentPage: 1
     };
   }
 
@@ -87,20 +90,32 @@ class Browse extends React.Component {
     }))
   }
 
-  fetchAnimes = (evt) => {
-    evt.preventDefault();
-    hanldeAnimeRequest('/browse/anime', _omit(this.state, 'animeList'))
-      .then(animeList => {
+  updateAnimeList = (currentPage) => {
+    const offset = currentPage > 1 ? currentPage * ITEMS_PER_PAGE : currentPage;
+
+    requestAnimeList('/anime', { 'page[offset]': offset, 'page[limit]': ITEMS_PER_PAGE })
+      .then((resp) => {
         this.setState(() => ({
-          animeList
+          animeList: _get(resp, 'data.data', []),
+          count: _get(resp, 'data.meta.count', 0),
+          currentPage
         }))
       });
+  }
+
+  fetchAnimes = (evt) => {
+    evt.preventDefault();
+    this.updateAnimeList(1);
+  }
+
+  updateCurrentPage = (evt) => {
+    this.updateAnimeList(parseInt(evt.target.outerText));
   }
 
   render() {
     return (
       <div>
-        <NavLink to="/">Back to Home</NavLink>
+        <Link to="/">Back to Home</Link>
         <form onSubmit={this.fetchAnimes}>
           <label htmlFor="year">
             Anime Year
@@ -142,6 +157,9 @@ class Browse extends React.Component {
           <button type="submit">Search</button>
         </form>
         <AnimeList list={this.state.animeList} />
+        {this.state.count
+          ? <Pagination total={this.state.count} itemsPerPage={ITEMS_PER_PAGE} currentPage={this.state.currentPage} updateCurrentPage={this.updateCurrentPage} />
+          : null}
       </div>
     );
   }

@@ -22,3 +22,7 @@ yarn-error.log*
 
 .vscode
 .env
+
+# parcel
+.parcel-cache
+dist
