@@ -93,7 +93,7 @@ class Browse extends React.Component {
   updateAnimeList = (currentPage) => {
     const offset = currentPage > 1 ? currentPage * ITEMS_PER_PAGE : currentPage;
 
-    requestAnimeList('/anime', { 'page[offset]': offset, 'page[limit]': ITEMS_PER_PAGE })
+    return requestAnimeList('/anime', { 'page[offset]': offset, 'page[limit]': ITEMS_PER_PAGE })
       .then((resp) => {
         this.setState(() => ({
           animeList: _get(resp, 'data.data', []),
@@ -109,7 +109,9 @@ class Browse extends React.Component {
   }
 
   updateCurrentPage = (evt) => {
-    this.updateAnimeList(parseInt(evt.target.outerText));
+    this.updateAnimeList(parseInt(evt.target.outerText)).then(() => {
+      window.scrollTo(0, 0);
+    });
   }
 
   render() {
