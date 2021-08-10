@@ -1,34 +1,35 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import _get from 'lodash/get';
+import _reduce from 'lodash/reduce';
 import AnimeList from './AnimeList';
 import Pagination from './Pagination';
 import requestAnimeList from '../helpers/request';
 
-const ANIME_SEASONS = [
-  "winter",
-  "spring",
-  "summer",
-  "fall"
-];
-const ANIME_STATUS = [
-  'finished airing',
-  'currently airing',
-  'not yet aired',
-  'cancelled',
-];
-const ANIME_SORT = [
-  'id',
-  'score',
-  'popularity',
-  'start_date',
-  'end_dat',
-  'id-desc',
-  'score-desc',
-  'popularity-desc',
-  'start_date-desc',
-  'end_dat-desc'
-];
+const ANIME_SEASONS = {
+  winter: 'winter',
+  spring: 'spring',
+  summer: 'summer',
+  fall: 'fall'
+};
+const ANIME_STATUS = {
+  current: 'current',
+  finished: 'finished',
+  tba: 'tba',
+  unreleased: 'unreleased',
+  upcoming: 'upcoming'
+};
+const ANIME_SORT = {
+  id: 'id',
+  score: 'score',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  popularityRank: 'popularityRank',
+  ratingRank: 'ratingRank',
+  averageRating: 'averageRating',
+  startDate: 'startDate',
+  endDate: 'endDate'
+};
 const ITEMS_PER_PAGE = 10;
 
 
@@ -46,14 +47,12 @@ class Browse extends React.Component {
     super(props);
     this.state = {
       animeList: [],
-      year: this.props.year || new Date().getFullYear(),
-      genres: '',
-      genres_exclude: '',
-      airing_data: false,
-      full_page: true,
-      sort: 'popularity',
-      status: 'currently airing',
-      season: 'winter',
+      searchFields: {
+        seasonYear: this.props.year || new Date().getFullYear(),
+        sort: ANIME_SORT.popularityRank,
+        status: ANIME_STATUS.current,
+        season: ANIME_SEASONS.spring
+      },
       currentPage: 1
     };
   }
@@ -63,8 +62,10 @@ class Browse extends React.Component {
       elementValue = evt.target ? evt.target.value : null;
 
     if (elementName && elementValue !== null) {
+      const newState = Object.assign({}, this.state.searchFields, { [elementName]: elementValue });
+
       this.setState(() => ({
-        [elementName]: elementValue
+        searchFields: newState
       }));
     }
   }
@@ -83,17 +84,31 @@ class Browse extends React.Component {
   updateSelectField = (evt) => {
     const element = evt.target || null,
       elementName = element ? element.getAttribute('name') : null,
-      selectedOption = element ? element.options[element.selectedIndex].value : '';
+      selectedOption = element ? element.options[element.selectedIndex].value : '',
+      newState = Object.assign({}, this.state.searchFields, { [elementName]: selectedOption });
 
     this.setState(() => ({
-      [elementName]: selectedOption
+      searchFields: newState
     }))
   }
 
   updateAnimeList = (currentPage) => {
     const offset = currentPage > 1 ? currentPage * ITEMS_PER_PAGE : currentPage;
+    const searchParams = _reduce(this.state.searchFields, (result, value, key) => {
+      if (value) {
+        if (key !== 'sort') {
+          result[`filter[${key}]`] = value;
+        } else {
+          result[`sort`] = value;
+        }
+      }
 
-    return requestAnimeList('/anime', { 'page[offset]': offset, 'page[limit]': ITEMS_PER_PAGE })
+      return result;
+    }, {}) || {};
+    const options = { 'page[offset]': offset, 'page[limit]': ITEMS_PER_PAGE, ...searchParams };
+
+
+    return requestAnimeList('/anime', options)
       .then((resp) => {
         this.setState(() => ({
           animeList: _get(resp, 'data.data', []),
@@ -121,11 +136,11 @@ class Browse extends React.Component {
         <form onSubmit={this.fetchAnimes}>
           <label htmlFor="year">
             Anime Year
-            <input id="year" name="year" type="text" value={this.state.year} onChange={this.updateTextField} />
+            <input id="year" name="seasonYear" type="text" value={this.state.seasonYear} onChange={this.updateTextField} />
           </label>
-          <AnimeSelectOption list={ANIME_SEASONS} handleChange={this.updateSelectField} name="season" />
-          <AnimeSelectOption list={ANIME_STATUS} handleChange={this.updateSelectField} name="status" />
-          <fieldset>
+          <AnimeSelectOption list={Object.values(ANIME_SEASONS)} handleChange={this.updateSelectField} name="season" />
+          <AnimeSelectOption list={Object.values(ANIME_STATUS)} handleChange={this.updateSelectField} name="status" />
+          {/* <fieldset>
             <label htmlFor="genres">
               Anime genres
               <input id="genres" name="genres" type="text" value={this.state.genres} onChange={this.updateTextField} />
@@ -146,16 +161,8 @@ class Browse extends React.Component {
               <br />
               Note: It will show animes that does not match any of the specified excluded genres
             </span>
-          </fieldset>
-          <AnimeSelectOption list={ANIME_SORT} handleChange={this.updateSelectField} name="sort" />
-          <label htmlFor="airing_data">
-            Airing data
-            <input id="airing_data" type="checkbox" name="airing_data" onChange={this.updateCheckField} checked={this.state.airing_data} />
-          </label>
-          <label htmlFor="full_page">
-            Full page
-            <input id="full_page" type="checkbox" name="full_page" onChange={this.updateCheckField} checked={this.state.full_page} />
-          </label>
+          </fieldset> */}
+          <AnimeSelectOption list={Object.values(ANIME_SORT)} handleChange={this.updateSelectField} name="sort" />
           <button type="submit">Search</button>
         </form>
         <AnimeList list={this.state.animeList} />
