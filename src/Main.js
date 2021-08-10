@@ -1,13 +1,13 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Home from './views/Home';
-import Browse from './views/Browse';
+import Search from './components/Search';
 
-function Main({ props }) {
+function Main() {
   return (
     <Switch>
       <Route path="/" exact component={Home} />
-      <Route path="/browse" component={Browse} />
+      <Route path="/search" component={Search} />
     </Switch>
   );
 }

@@ -1,13 +1,21 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-function AnimeCard({ title_english, title_romaji, image_url_lge, total_episodes, duration }) {
+function AnimeCard({ id, attributes }) {
+  const { subtype = '', titles = {}, posterImage = {}, episodeCount = '', episodeLength = '' } = attributes;
+  const { en: englishTitle = '', en_jp: enGlishJapaneseTitle = '', ja_jp: titleRomaji = '' } = titles;
+  const { medium: posterMediumUrl } = posterImage;
+  const titleEnglish = englishTitle || enGlishJapaneseTitle;
+
   return (
-    <div>
-      <img src={image_url_lge} alt={title_english} />
-      <p>{title_romaji}</p>
-      <p>Episodes: {total_episodes}</p>
-      <p>Duration per episode: {duration}</p>
-    </div>
+    <Link to={`/details/${id}`}>
+      <img src={posterMediumUrl} alt={titleEnglish} />
+      <p>Japanese Title: {titleRomaji}</p>
+      <p>English Title: {titleEnglish}</p>
+      <p>Episodes: {episodeCount}</p>
+      <p>SubType: {subtype}</p>
+      <p>Episode Length in minutes: {episodeLength || "N/A"}</p>
+    </Link>
   );
 }
 
