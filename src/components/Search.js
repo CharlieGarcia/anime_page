@@ -2,9 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import _get from 'lodash/get';
 import _reduce from 'lodash/reduce';
+import _startCase from 'lodash/startCase';
 import AnimeList from './AnimeList';
 import Pagination from './Pagination';
-import requestAnimeList from '../helpers/request';
+import { fetch, formatGenres } from '../helpers/request';
 
 const ANIME_SEASONS = {
   winter: 'winter',
@@ -30,14 +31,27 @@ const ANIME_SORT = {
   startDate: 'startDate',
   endDate: 'endDate'
 };
+const ANIME_SUBTYPE = {
+  ona: 'ONA',
+  ova: 'OVA',
+  tv: 'TV',
+  movie: 'movie',
+  music: 'music',
+  special: 'special'
+};
+const ANIME_AGE_RATING = {
+  g: 'G',
+  pg: 'PG',
+  r: 'R'
+};
 const ITEMS_PER_PAGE = 10;
 
 
-function AnimeSelectOption({ list, handleChange, name }) {
+function AnimeSelectOption({ list, handleChange, name, value }) {
   return (
-    <select onChange={handleChange} onBlur={handleChange} name={name}>
+    <select value={value} onChange={handleChange} onBlur={handleChange} name={name}>
       {list.map((item, index) =>
-        <option value={item} key={index}>{item}</option>)}
+        <option value={item} key={index}>{_startCase(item)}</option>)}
     </select>
   );
 }
@@ -51,9 +65,14 @@ class Browse extends React.Component {
         seasonYear: this.props.year || new Date().getFullYear(),
         sort: ANIME_SORT.popularityRank,
         status: ANIME_STATUS.current,
-        season: ANIME_SEASONS.spring
+        season: ANIME_SEASONS.spring,
+        categories: '',
+        subtype: '',
+        ageRating: ANIME_AGE_RATING.g
       },
-      currentPage: 1
+      genres: [],
+      currentPage: 1,
+      status: ''
     };
   }
 
@@ -92,6 +111,17 @@ class Browse extends React.Component {
     }))
   }
 
+  componentDidMount() {
+    fetch('/genres')
+      .then(({ data }) => data.data)
+      .then(genres => formatGenres(genres))
+      .then(genres => {
+        this.setState(() => ({
+          genres
+        }));
+      });
+  }
+
   updateAnimeList = (currentPage) => {
     const offset = currentPage > 1 ? currentPage * ITEMS_PER_PAGE : currentPage;
     const searchParams = _reduce(this.state.searchFields, (result, value, key) => {
@@ -108,17 +138,19 @@ class Browse extends React.Component {
     const options = { 'page[offset]': offset, 'page[limit]': ITEMS_PER_PAGE, ...searchParams };
 
 
-    return requestAnimeList('/anime', options)
+    return fetch('/anime', options)
       .then((resp) => {
         this.setState(() => ({
           animeList: _get(resp, 'data.data', []),
           count: _get(resp, 'data.meta.count', 0),
-          currentPage
+          currentPage,
+          status: 'done'
         }))
       });
   }
 
   fetchAnimes = (evt) => {
+    this.setState({ status: 'searching' });
     evt.preventDefault();
     this.updateAnimeList(1);
   }
@@ -136,36 +168,25 @@ class Browse extends React.Component {
         <form onSubmit={this.fetchAnimes}>
           <label htmlFor="year">
             Anime Year
-            <input id="year" name="seasonYear" type="text" value={this.state.seasonYear} onChange={this.updateTextField} />
+            <input id="year" name="seasonYear" type="text" value={this.state.searchFields.seasonYear} onChange={this.updateTextField} />
           </label>
-          <AnimeSelectOption list={Object.values(ANIME_SEASONS)} handleChange={this.updateSelectField} name="season" />
-          <AnimeSelectOption list={Object.values(ANIME_STATUS)} handleChange={this.updateSelectField} name="status" />
-          {/* <fieldset>
-            <label htmlFor="genres">
-              Anime genres
-              <input id="genres" name="genres" type="text" value={this.state.genres} onChange={this.updateTextField} />
-            </label>
-            <span>
-              Please separate genres by comma
-              <br />
-              Note: Only brings animes that match all specified tags
-            </span>
-          </fieldset>
-          <fieldset>
-            <label htmlFor="genres_exclude">
-              Genres to exclude
-              <input id="genres_exclude" name="genres_exclude" type="text" value={this.state.genres_exclude} onChange={this.updateTextField} />
-            </label>
-            <span>
-              Please separate genres to exclude by comma
-              <br />
-              Note: It will show animes that does not match any of the specified excluded genres
-            </span>
-          </fieldset> */}
-          <AnimeSelectOption list={Object.values(ANIME_SORT)} handleChange={this.updateSelectField} name="sort" />
+          <AnimeSelectOption value={this.state.searchFields.season} list={Object.values(ANIME_SEASONS)} handleChange={this.updateSelectField} name="season" />
+          <AnimeSelectOption value={this.state.searchFields.status} list={Object.values(ANIME_STATUS)} handleChange={this.updateSelectField} name="status" />
+          <AnimeSelectOption value={this.state.searchFields.categories} list={this.state.genres} handleChange={this.updateSelectField} name="categories" />
+          <AnimeSelectOption value={this.state.searchFields.sort} list={Object.values(ANIME_SORT)} handleChange={this.updateSelectField} name="sort" />
+          <AnimeSelectOption value={this.state.searchFields.subtype} list={Object.values(ANIME_SUBTYPE)} handleChange={this.updateSelectField} name="subtype" />
+          <AnimeSelectOption value={this.state.searchFields.ageRating} list={Object.values(ANIME_AGE_RATING)} handleChange={this.updateSelectField} name="ageRating" />
           <button type="submit">Search</button>
         </form>
-        <AnimeList list={this.state.animeList} />
+        {this.state.status === 'searching' ? 'Loading...' : null}
+        {this.state.status === 'done' && (this.state.animeList || []).length
+          ? <AnimeList list={this.state.animeList} />
+          : null
+        }
+        {this.state.status === 'done' && !(this.state.animeList || []).length
+          ? 'Content not found. Please try with other parameters'
+          : null
+        }
         {this.state.count
           ? <Pagination total={this.state.count} itemsPerPage={ITEMS_PER_PAGE} currentPage={this.state.currentPage} updateCurrentPage={this.updateCurrentPage} />
           : null}
