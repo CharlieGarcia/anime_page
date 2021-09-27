@@ -4,7 +4,6 @@ const Pagination = ({ total, itemsPerPage, currentPage = 1, updateCurrentPage })
   const pageCount = Math.floor(total / itemsPerPage);
   const pageList = Array.from(Array(pageCount).keys());
 
-  console.log(pageCount);
   return (
     <div>
       {pageList.map(i => {
