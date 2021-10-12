@@ -135,7 +135,10 @@ class Browse extends React.Component {
 
       return result;
     }, {}) || {};
-    const options = { 'page[offset]': offset, 'page[limit]': ITEMS_PER_PAGE, ...searchParams };
+    const options = {
+      headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
+      'page[offset]': offset, 'page[limit]': ITEMS_PER_PAGE, ...searchParams
+    };
 
 
     return fetch('/anime', options)
