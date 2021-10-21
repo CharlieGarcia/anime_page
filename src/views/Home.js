@@ -6,7 +6,7 @@ function Home({ props }) {
     <div>
       <h1>My Anime Page</h1>
       <p>
-        This is a page for testing create-react-app and make queries to <a href="http://anilist-api.readthedocs.io/en/latest/index.html" target="_blank"  rel="noopener noreferrer">anilist.co API</a>.
+        This is a page for testing create-react-app and make queries to <a href="https://kitsu.docs.apiary.io/#introduction/json:api" target="_blank" rel="noopener noreferrer">kitsu API</a>.
         <br />
         For browsering animes from the API list, please visit our <NavLink to="/browse">Browse section</NavLink> ;)
       </p>
