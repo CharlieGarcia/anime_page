@@ -8,12 +8,14 @@ import Pagination from './Pagination';
 import { fetch, formatGenres } from '../helpers/request';
 
 const ANIME_SEASONS = {
+  any: '',
   winter: 'winter',
   spring: 'spring',
   summer: 'summer',
   fall: 'fall'
 };
 const ANIME_STATUS = {
+  any: '',
   current: 'current',
   finished: 'finished',
   tba: 'tba',
@@ -32,6 +34,7 @@ const ANIME_SORT = {
   endDate: 'endDate'
 };
 const ANIME_SUBTYPE = {
+  any: '',
   ona: 'ONA',
   ova: 'OVA',
   tv: 'TV',
@@ -40,6 +43,7 @@ const ANIME_SUBTYPE = {
   special: 'special'
 };
 const ANIME_AGE_RATING = {
+  any: '',
   g: 'G',
   pg: 'PG',
   r: 'R'
@@ -64,11 +68,11 @@ class Browse extends React.Component {
       searchFields: {
         seasonYear: this.props.year || new Date().getFullYear(),
         sort: ANIME_SORT.popularityRank,
-        status: ANIME_STATUS.current,
-        season: ANIME_SEASONS.spring,
+        status: ANIME_STATUS.any,
+        season: ANIME_SEASONS.any,
         categories: '',
-        subtype: '',
-        ageRating: ANIME_AGE_RATING.g
+        subtype: ANIME_SUBTYPE.any,
+        ageRating: ANIME_AGE_RATING.any
       },
       genres: [],
       currentPage: 1,
@@ -164,6 +168,24 @@ class Browse extends React.Component {
     });
   }
 
+  clearFilters = () => {
+    this.setState({
+      animeList: [],
+      searchFields: {
+        seasonYear: this.props.year || new Date().getFullYear(),
+        sort: ANIME_SORT.popularityRank,
+        status: ANIME_STATUS.any,
+        season: ANIME_SEASONS.any,
+        categories: '',
+        subtype: ANIME_SUBTYPE.any,
+        ageRating: ANIME_AGE_RATING.any
+      },
+      genres: [],
+      currentPage: 1,
+      status: ''
+    });
+  }
+
   render() {
     return (
       <div>
@@ -180,6 +202,7 @@ class Browse extends React.Component {
           <AnimeSelectOption value={this.state.searchFields.subtype} list={Object.values(ANIME_SUBTYPE)} handleChange={this.updateSelectField} name="subtype" />
           <AnimeSelectOption value={this.state.searchFields.ageRating} list={Object.values(ANIME_AGE_RATING)} handleChange={this.updateSelectField} name="ageRating" />
           <button type="submit">Search</button>
+          <button onClick={this.clearFilters}>Clear filters</button>
         </form>
         {this.state.status === 'searching' ? 'Loading...' : null}
         {this.state.status === 'done' && (this.state.animeList || []).length
