@@ -1,15 +1,14 @@
 import React from 'react';
-import Main from './Main';
+import { Switch, Route } from 'react-router-dom';
+import Home from './views/Home';
+import Search from './components/Search';
 
 function App() {
-
   return (
-    <div className="App">
-      <header className="header">
-        <h1 className="App-title">Welcome to Anime Page</h1>
-      </header>
-      <Main />
-    </div>
+    <Switch>
+      <Route path="/" exact component={Home} />
+      <Route path="/search" component={Search} />
+    </Switch>
   );
 }
 
