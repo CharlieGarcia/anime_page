@@ -13,7 +13,8 @@
     "styled-components": "^5.3.0"
   },
   "scripts": {
-    "dev": "parcel --no-cache ./src/index.html"
+    "dev": "parcel --no-cache ./src/index.html",
+    "prepare": "husky install"
   },
   "resolutions": {
     "styled-components": "^5"
@@ -29,7 +30,12 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^11.2.6",
     "parcel": "^2.0.0-beta.2",
-    "prettier": "^2.3.1"
+    "prettier": "2.4.1"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }
