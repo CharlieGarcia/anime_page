@@ -123,16 +123,13 @@ class Browse extends React.Component {
           fetchAnimes={this.fetchAnimes}
           clearFilters={this.clearFilters} />
         {this.state.status === 'searching' ? 'Loading...' : null}
-        {this.state.status === 'done' && (this.state.animeList || []).length
-          ? <AnimeList list={this.state.animeList} />
-          : null
-        }
-        {this.state.status === 'done' && !(this.state.animeList || []).length
-          ? 'Content not found. Please try with other parameters'
-          : null
-        }
+        {this.state.status === 'done' ? <AnimeList list={this.state.animeList} /> : null}
         {this.state.count
-          ? <Pagination total={this.state.count} itemsPerPage={ITEMS_PER_PAGE} currentPage={this.state.currentPage} updateCurrentPage={this.updateCurrentPage} />
+          ? <Pagination
+            total={this.state.count}
+            itemsPerPage={ITEMS_PER_PAGE}
+            currentPage={this.state.currentPage}
+            updateCurrentPage={this.updateCurrentPage} />
           : null}
       </div>
     );
