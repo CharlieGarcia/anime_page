@@ -3,8 +3,9 @@ import AnimeCard from './AnimeCard';
 
 function AnimeList({ list = [] }) {
   return (
-    <div className="anime-grid">
-      {list.map((anime, index) => <AnimeCard key={index} {...anime} />)}
+    <div>
+      {!list.length ? 'Content not found. Please try with other parameters' : null}
+      {list.length ? list.map((anime, index) => <AnimeCard key={index} {...anime} />) : null}
     </div>
   );
 }
