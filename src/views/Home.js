@@ -27,7 +27,7 @@ function Home() {
         .
         <br />
         For browsering animes from the API list, please visit our{' '}
-        <NavLink to="/browse">Browse section</NavLink> ;)
+        <NavLink to="/search">Browse section</NavLink> ;)
       </p>
       <h2>Top 10 Trending Animes</h2>
       <AnimeList list={animeList} />
