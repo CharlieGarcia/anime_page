@@ -8,16 +8,33 @@ const Card = styled.div`
 
 const CardDetails = styled.div`
   display: flex;
-  align-items: center;
   justify-content: center;
   flex-direction: column;
   min-width: calc(100% - (284px + 20px));
 `;
 
-const ImageWrapper = styled.img.attrs((props) => ({
+const ImageWrapper = styled.div`
+  margin: 0 20px 0 0;
+  position: relative;
+
+  &:before {
+    content: '';
+    display: inline-block;
+    height: calc(4/3 * 284px);
+    position: relative;
+    width: 225px;
+  }
+`;
+
+const Image = styled.img.attrs(props => ({
   src: props.imageUrl
 }))`
-  margin: 0 20px 0 0;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
 `;
 
 const StyledLink = styled(Link).attrs((props) => ({
@@ -42,7 +59,9 @@ function AnimeCard({ id, attributes }) {
   return (
     <StyledLink to={`/details/${id}`}>
       <Card>
-        <ImageWrapper imageUrl={posterImageUrl} />
+        <ImageWrapper>
+          <Image imageUrl={posterImageUrl} />
+        </ImageWrapper>
         <CardDetails>
           <p>Japanese Title: {titleRomaji}</p>
           <p>English Title: {titleEnglish}</p>

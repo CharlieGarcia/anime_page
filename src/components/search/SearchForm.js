@@ -18,6 +18,8 @@ function SearchForm({ searchFields, clearFilters, fetchAnimes, updateSelectField
     genres = formatGenres(genres.data.data);
 
     setGenres(genres);
+
+    return () => { };
   });
 
   return (

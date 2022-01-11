@@ -11,6 +11,8 @@ function Detail() {
     const _info = await fetch(`/anime/${id}`);
 
     setInfo(_get(_info, 'data.data') || {});
+
+    return () => { };
   }, []);
 
   return (
