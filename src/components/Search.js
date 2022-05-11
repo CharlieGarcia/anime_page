@@ -110,6 +110,7 @@ class Browse extends React.Component {
 
   updateCurrentPage = (evt) => {
     this.updateAnimeList(parseInt(evt.target.outerText));
+    window.scrollTo(0, 0);
   }
 
   render() {
