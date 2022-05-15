@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Home from './views/Home';
 import Browse from './views/Browse';
-import Detail from './views/Detail'
+import Detail from './views/Detail';
 
 function App() {
   return (
