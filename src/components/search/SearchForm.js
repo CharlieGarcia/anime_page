@@ -7,10 +7,15 @@ import {
   ANIME_SORT,
   ANIME_SUBTYPE,
   ANIME_AGE_RATING
-} from '../../constants'
+} from '../../constants';
 
-function SearchForm({ searchFields, clearFilters, fetchAnimes, updateSelectField, updateTextField }) {
-
+function SearchForm({
+  searchFields,
+  clearFilters,
+  fetchAnimes,
+  updateSelectField,
+  updateTextField
+}) {
   const [genres, setGenres] = useState([]);
 
   useEffect(async () => {
@@ -18,22 +23,56 @@ function SearchForm({ searchFields, clearFilters, fetchAnimes, updateSelectField
     genres = formatGenres(genres.data.data);
 
     setGenres(genres);
-
-    return () => { };
   });
 
   return (
     <form onSubmit={fetchAnimes}>
       <label htmlFor="year">
         Anime Year
-        <input id="year" name="seasonYear" type="text" value={searchFields.seasonYear} onChange={updateTextField} />
+        <input
+          id="year"
+          name="seasonYear"
+          type="text"
+          value={searchFields.seasonYear}
+          onChange={updateTextField}
+        />
       </label>
-      <Select value={searchFields.season} list={Object.values(ANIME_SEASONS)} handleChange={updateSelectField} name="season" />
-      <Select value={searchFields.status} list={Object.values(ANIME_STATUS)} handleChange={updateSelectField} name="status" />
-      <Select value={searchFields.categories} list={genres} handleChange={updateSelectField} name="categories" />
-      <Select value={searchFields.sort} list={Object.values(ANIME_SORT)} handleChange={updateSelectField} name="sort" />
-      <Select value={searchFields.subtype} list={Object.values(ANIME_SUBTYPE)} handleChange={updateSelectField} name="subtype" />
-      <Select value={searchFields.ageRating} list={Object.values(ANIME_AGE_RATING)} handleChange={updateSelectField} name="ageRating" />
+      <Select
+        value={searchFields.season}
+        list={Object.values(ANIME_SEASONS)}
+        handleChange={updateSelectField}
+        name="season"
+      />
+      <Select
+        value={searchFields.status}
+        list={Object.values(ANIME_STATUS)}
+        handleChange={updateSelectField}
+        name="status"
+      />
+      <Select
+        value={searchFields.categories}
+        list={genres}
+        handleChange={updateSelectField}
+        name="categories"
+      />
+      <Select
+        value={searchFields.sort}
+        list={Object.values(ANIME_SORT)}
+        handleChange={updateSelectField}
+        name="sort"
+      />
+      <Select
+        value={searchFields.subtype}
+        list={Object.values(ANIME_SUBTYPE)}
+        handleChange={updateSelectField}
+        name="subtype"
+      />
+      <Select
+        value={searchFields.ageRating}
+        list={Object.values(ANIME_AGE_RATING)}
+        handleChange={updateSelectField}
+        name="ageRating"
+      />
       <button type="submit">Search</button>
       <button onClick={clearFilters}>Clear filters</button>
     </form>
