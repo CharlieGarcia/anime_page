@@ -44,4 +44,4 @@ export const ANIME_AGE_RATING = {
   r: 'R'
 };
 
-export const ITEMS_PER_PAGE = 10;
+export const ITEMS_PER_PAGE = 12;
