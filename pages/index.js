@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import Link from 'next/link';
 import _get from 'lodash/get';
 import AnimeList from '../components/AnimeList';
 import { fetch } from '../helpers/request';
 
-function Home() {
+const Home = () => {
   const [animeList, setAnimeList] = useState([]);
 
-  useEffect(async () => {
-    const animes = await fetch('/trending/anime');
+  useEffect(() => {
+    const fetchAnimeList = async () => {
+      const animes = await fetch('/trending/anime');
 
-    setAnimeList(_get(animes, 'data.data', []));
+      setAnimeList(_get(animes, 'data.data', []));
+    };
+
+    fetchAnimeList().catch((e) => console.error(e));
   }, []);
 
   return (
@@ -27,12 +31,12 @@ function Home() {
         .
         <br />
         For browsering animes from the API list, please visit our{' '}
-        <NavLink to="/search">Browse section</NavLink> ;)
+        <Link href="/search">Browse section</Link>
       </p>
       <h2>Top 10 Trending Animes</h2>
       <AnimeList list={animeList} />
     </div>
   );
-}
+};
 
 export default Home;
