@@ -1,24 +1,25 @@
 import React from 'react';
+import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import _startCase from 'lodash/startCase';
 
-function Select({ list, handleChange, name, value }) {
+function CustomSelect({ list, handleChange, name, value, fullWidth = false }) {
   return (
-    <label htmlFor={name}>
-      {_startCase(name)}
-      <select
+    <FormControl fullWidth={fullWidth}>
+      <InputLabel htmlFor={name}>{name}</InputLabel>
+      <Select
         id={name}
+        label={name}
         value={value}
         onChange={handleChange}
-        onBlur={handleChange}
-        name={name}>
+        onBlur={handleChange}>
         {list.map((item, index) => (
-          <option value={item} key={index}>
+          <MenuItem value={item} key={index}>
             {_startCase(item)}
-          </option>
+          </MenuItem>
         ))}
-      </select>
-    </label>
+      </Select>
+    </FormControl>
   );
 }
 
-export default Select;
+export default CustomSelect;

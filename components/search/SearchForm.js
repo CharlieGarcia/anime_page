@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Select from './Select';
+import { Button, Grid } from '@mui/material';
+import CustomTextField from './TextField';
+import CustomSelect from './Select';
 import { fetch, formatGenres } from '../../helpers/request';
 import {
   ANIME_SEASONS,
@@ -30,54 +32,79 @@ function SearchForm({
 
   return (
     <form onSubmit={fetchAnimes}>
-      <label htmlFor="year">
-        Anime Year
-        <input
-          id="year"
-          name="seasonYear"
-          type="text"
-          value={searchFields.seasonYear}
-          onChange={updateSearchField('seasonYear')}
-        />
-      </label>
-      <Select
-        value={searchFields.season}
-        list={Object.values(ANIME_SEASONS)}
-        handleChange={updateSearchField('season')}
-        name="season"
-      />
-      <Select
-        value={searchFields.status}
-        list={Object.values(ANIME_STATUS)}
-        handleChange={updateSearchField('status')}
-        name="status"
-      />
-      <Select
-        value={searchFields.categories}
-        list={genres}
-        handleChange={updateSearchField('categories')}
-        name="categories"
-      />
-      <Select
-        value={searchFields.sort}
-        list={Object.values(ANIME_SORT)}
-        handleChange={updateSearchField('sort')}
-        name="sort"
-      />
-      <Select
-        value={searchFields.subtype}
-        list={Object.values(ANIME_SUBTYPE)}
-        handleChange={updateSearchField('subtype')}
-        name="subtype"
-      />
-      <Select
-        value={searchFields.ageRating}
-        list={Object.values(ANIME_AGE_RATING)}
-        handleChange={updateSearchField('ageRating')}
-        name="ageRating"
-      />
-      <button type="submit">Search</button>
-      <button onClick={clearFilters}>Clear filters</button>
+      <Grid container spacing={2}>
+        <Grid xs={12} sm={6} md={3} item>
+          <CustomTextField
+            label="Anime Year"
+            id="year"
+            name="seasonYear"
+            value={searchFields.seasonYear}
+            onChange={updateSearchField('seasonYear')}
+          />
+        </Grid>
+        <Grid xs={12} sm={6} md={3} item>
+          <CustomSelect
+            value={searchFields.season}
+            list={Object.values(ANIME_SEASONS)}
+            handleChange={updateSearchField('season')}
+            name="season"
+            fullWidth
+          />
+        </Grid>
+        <Grid xs={12} sm={6} md={3} item>
+          <CustomSelect
+            value={searchFields.status}
+            list={Object.values(ANIME_STATUS)}
+            handleChange={updateSearchField('status')}
+            name="status"
+            fullWidth
+          />
+        </Grid>
+        <Grid xs={12} sm={6} md={3} item>
+          <CustomSelect
+            value={searchFields.categories}
+            list={genres}
+            handleChange={updateSearchField('categories')}
+            name="categories"
+            fullWidth
+          />
+        </Grid>
+        <Grid xs={12} sm={6} md={3} item>
+          <CustomSelect
+            value={searchFields.sort}
+            list={Object.values(ANIME_SORT)}
+            handleChange={updateSearchField('sort')}
+            name="sort"
+            fullWidth
+          />
+        </Grid>
+        <Grid xs={12} sm={6} md={3} item>
+          <CustomSelect
+            value={searchFields.subtype}
+            list={Object.values(ANIME_SUBTYPE)}
+            handleChange={updateSearchField('subtype')}
+            name="subtype"
+            fullWidth
+          />
+        </Grid>
+        <Grid xs={12} sm={6} md={3} item>
+          <CustomSelect
+            value={searchFields.ageRating}
+            list={Object.values(ANIME_AGE_RATING)}
+            handleChange={updateSearchField('ageRating')}
+            name="ageRating"
+            fullWidth
+          />
+        </Grid>
+      </Grid>
+      <Grid xs={12} sm={6} md={3} item>
+        <Button variant="contained" type="submit">
+          Search
+        </Button>
+        <Button variant="outlined" onClick={clearFilters}>
+          Clear filters
+        </Button>
+      </Grid>
     </form>
   );
 }
