@@ -3,7 +3,7 @@ import Link from 'next/link';
 import _get from 'lodash/get';
 import _reduce from 'lodash/reduce';
 import AnimeList from '../../components/AnimeList';
-import Pagination from '../../components/Pagination';
+import CustomPagination from '../../components/Pagination';
 import SearchForm from '../../components/search/SearchForm';
 import { fetch } from '../../helpers/request';
 import {
@@ -73,15 +73,13 @@ const Search = () => {
     };
 
     return fetch('/anime', options).then((resp) => {
-      setPageState((existingState) => {
-        return {
-          ...existingState,
-          animeList: _get(resp, 'data.data', []),
-          count: _get(resp, 'data.meta.count', 0),
-          currentPage,
-          searchingStatus: false
-        };
-      });
+      setPageState((existingState) => ({
+        ...existingState,
+        animeList: _get(resp, 'data.data') || [],
+        count: _get(resp, 'data.meta.count') || 0,
+        currentPage,
+        searchingStatus: false
+      }));
     });
   };
 
@@ -91,7 +89,7 @@ const Search = () => {
       searchingStatus: true
     }));
     evt.preventDefault();
-    updateAnimeList(1);
+    updateAnimeList(pageState.currentPage);
   };
 
   const clearFilters = () => {
@@ -134,7 +132,7 @@ const Search = () => {
         <AnimeList list={pageState.animeList} />
       )}
       {pageState.count ? (
-        <Pagination
+        <CustomPagination
           total={pageState.count}
           itemsPerPage={ITEMS_PER_PAGE}
           currentPage={pageState.currentPage}
