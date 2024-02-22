@@ -3,13 +3,14 @@ import Link from 'next/link';
 import _get from 'lodash/get';
 import AnimeList from '../components/AnimeList';
 import { fetch } from '../helpers/request';
+const ANIME_LIMIT = 12;
 
 const Home = () => {
   const [animeList, setAnimeList] = useState([]);
 
   useEffect(() => {
     const fetchAnimeList = async () => {
-      const animes = await fetch('/trending/anime');
+      const animes = await fetch('/trending/anime', { limit: ANIME_LIMIT });
 
       setAnimeList(_get(animes, 'data.data', []));
     };
@@ -33,7 +34,7 @@ const Home = () => {
         For browsering animes from the API list, please visit our{' '}
         <Link href="/search">Browse section</Link>
       </p>
-      <h2>Top 10 Trending Animes</h2>
+      <h2>Top {ANIME_LIMIT} Trending Animes</h2>
       <AnimeList list={animeList} />
     </div>
   );
