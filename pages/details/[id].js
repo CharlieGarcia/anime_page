@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, Container, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import _get from 'lodash/get';
-import CustomImage from '../../components/image';
+import Image from '../../components/image';
 import { Layout } from '../../components/layout';
 import { fetch } from '../../helpers/request';
 
@@ -31,8 +31,6 @@ function Detail() {
     const fetchInfo = async () => {
       if (!router.isReady) return;
       const _info = await fetch(`/anime/${id}`);
-
-      console.log('anime info: ', JSON.stringify(_info, null, 2));
 
       setState((existingState) => ({
         ...existingState,
@@ -81,17 +79,12 @@ function Detail() {
   return (
     <Layout>
       Detail page
-      {state.infoStatus ? (
-        'Loading ...'
-      ) : (
-        <p>{JSON.stringify(state.info, null, 2)}</p>
-      )}
+      {state.infoStatus && ('Loading ...')}
       <Container maxWidth="xl">
-        <Box style={{ position: 'relative' }}>
+        <Box>
           {state.info?.attributes?.coverImage?.large && (
-            <CustomImage
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            <Image
+              style={{ width: '100%', height: 'auto' }}
               src={state.info.attributes.coverImage.large}
               alt="some_alt_text"
             />
