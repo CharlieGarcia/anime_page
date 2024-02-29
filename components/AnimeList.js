@@ -1,5 +1,5 @@
 import React from 'react';
-import AnimeCard from './AnimeCard';
+import AnimeCard from './animeCard';
 import { Box } from '@mui/material';
 
 const styles = {
