@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import _get from 'lodash/get';
 import _reduce from 'lodash/reduce';
-import AnimeList from '../../components/AnimeList';
-import CustomPagination from '../../components/Pagination';
-import SearchForm from '../../components/search/SearchForm';
+import AnimeList from '../../components/animeList';
+import CustomPagination from '../../components/pagination';
+import SearchForm from '../../components/search/searchForm';
+import { Layout } from '../../components/layout';
 import { fetch } from '../../helpers/request';
 import {
   ANIME_SEASONS,
@@ -118,7 +119,7 @@ const Search = () => {
   };
 
   return (
-    <div>
+    <Layout>
       <Link href="/">Back to Home</Link>
       <SearchForm
         searchFields={pageState.searchFields}
@@ -139,7 +140,7 @@ const Search = () => {
           updateCurrentPage={updateCurrentPage}
         />
       ) : null}
-    </div>
+    </Layout>
   );
 };
 

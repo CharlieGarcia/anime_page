@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Grid } from '@mui/material';
-import CustomTextField from './TextField';
-import CustomSelect from './Select';
+import CustomTextField from './textField';
+import CustomSelect from './select';
 import { fetch, formatGenres } from '../../helpers/request';
 import {
   ANIME_SEASONS,

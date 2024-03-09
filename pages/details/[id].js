@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, Container, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import _get from 'lodash/get';
-import CustomImage from '../../components/Image';
+import CustomImage from '../../components/image';
+import { Layout } from '../../components/layout';
 import { fetch } from '../../helpers/request';
 
 const styles = {
@@ -78,7 +79,7 @@ function Detail() {
   }, [router.isReady, id]);
 
   return (
-    <div>
+    <Layout>
       Detail page
       {state.infoStatus ? (
         'Loading ...'
@@ -120,7 +121,7 @@ function Detail() {
           ))}
         </Box>
       </Container>
-    </div>
+    </Layout>
   );
 }
 
