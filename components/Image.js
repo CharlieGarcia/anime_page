@@ -1,6 +1,5 @@
 import React from 'react';
-import Image from 'next/image';
 
-const customImage = (props) => <Image {...props} />;
+const Image = (props) => <img alt="" {...props} />;
 
-export default customImage;
+export default Image;
