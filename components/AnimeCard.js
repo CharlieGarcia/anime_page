@@ -19,19 +19,21 @@ const AnimeCard = ({ id, attributes }) => {
     en_jp: enGlishJapaneseTitle = 'N/A',
     ja_jp: titleRomaji = 'N/A'
   } = titles;
-  const { small: posterImageUrl } = posterImage;
+  const { small: posterImageUrl } = posterImage || { small: '' };
   const titleEnglish = englishTitle || enGlishJapaneseTitle;
 
   return (
     <Link style={{ textDecoration: 'none' }} href={`/details/${id}`}>
       <Card sx={{ maxWidth: '284px' }}>
         <CardActionArea>
-          <CardMedia
-            component="img"
-            height={402}
-            image={posterImageUrl}
-            alt=""
-          />
+          {posterImageUrl && (
+            <CardMedia
+              component="img"
+              height={402}
+              image={posterImageUrl}
+              alt=""
+            />
+          )}
           <CardContent>
             <Typography variant="body2" color="text.secondary">
               Japanese Title: {titleRomaji}

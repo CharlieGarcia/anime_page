@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Container, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import _get from 'lodash/get';
 import Image from '../../components/image';
@@ -107,7 +107,7 @@ function Detail() {
             variant="outlined"
             style={styles.tags}
             key={category.id}
-            href={category.relatedAnimesLink}>
+            href={`/related/${category.id}`}>
             {category.title}
           </Button>
         ))}
