@@ -9,6 +9,7 @@ import { fetch } from '../../helpers/request';
 const styles = {
   tags: {
     marginRight: 15,
+    marginTop: 15,
     textTransform: 'capitalize'
   }
 };
@@ -78,42 +79,39 @@ function Detail() {
 
   return (
     <Layout>
-      Detail page
-      {state.infoStatus && ('Loading ...')}
-      <Container maxWidth="xl">
-        <Box>
-          {state.info?.attributes?.coverImage?.large && (
-            <Image
-              style={{ width: '100%', height: 'auto' }}
-              src={state.info.attributes.coverImage.large}
-              alt="some_alt_text"
-            />
-          )}
-        </Box>
-        <Box>
-          <Typography variant="h6" color="text.secondary">
-            Synopsis:
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {state.info.attributes?.synopsis}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {state.info.attributes?.titles?.ja_jp}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {state.info.attributes?.titles?.en_jp}
-          </Typography>
-          {state.categories.map((category) => (
-            <Button
-              variant="outlined"
-              style={styles.tags}
-              key={category.id}
-              href={category.relatedAnimesLink}>
-              {category.title}
-            </Button>
-          ))}
-        </Box>
-      </Container>
+      {state.infoStatus && 'Loading ...'}
+      <Box>
+        {state.info?.attributes?.coverImage?.large && (
+          <Image
+            style={{ width: '100%', height: 'auto' }}
+            src={state.info.attributes.coverImage.large}
+            alt="some_alt_text"
+          />
+        )}
+      </Box>
+      <Box>
+        <Typography variant="h6" color="text.secondary">
+          Synopsis:
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {state.info.attributes?.synopsis}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {state.info.attributes?.titles?.ja_jp}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {state.info.attributes?.titles?.en_jp}
+        </Typography>
+        {state.categories.map((category) => (
+          <Button
+            variant="outlined"
+            style={styles.tags}
+            key={category.id}
+            href={category.relatedAnimesLink}>
+            {category.title}
+          </Button>
+        ))}
+      </Box>
     </Layout>
   );
 }
