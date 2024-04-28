@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Link from 'next/link';
 import _get from 'lodash/get';
 import _reduce from 'lodash/reduce';
 import AnimeList from '../../components/animeList';
@@ -21,7 +20,7 @@ const Search = () => {
     searchFields: {
       seasonYear: new Date().getFullYear(),
       sort: ANIME_SORT.popularityRank,
-      status: ANIME_STATUS.any,
+      status: ANIME_STATUS.current,
       season: ANIME_SEASONS.any,
       categories: '',
       subtype: ANIME_SUBTYPE.any,
@@ -120,7 +119,6 @@ const Search = () => {
 
   return (
     <Layout>
-      <Link href="/">Back to Home</Link>
       <SearchForm
         searchFields={pageState.searchFields}
         updateSearchField={updateSearchField}
