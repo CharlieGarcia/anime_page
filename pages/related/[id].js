@@ -6,14 +6,6 @@ import { Layout } from '../../components/layout';
 import { fetch } from '../../helpers/request';
 import AnimeList from '../../components/animeList';
 
-const styles = {
-  tags: {
-    marginRight: 15,
-    marginTop: 15,
-    textTransform: 'capitalize'
-  }
-};
-
 function Related() {
   const router = useRouter();
   const { id } = router.query;
