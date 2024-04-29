@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import _get from 'lodash/get';
 import _reduce from 'lodash/reduce';
 import AnimeList from '../../components/animeList';
@@ -111,11 +111,14 @@ const Search = () => {
     }));
   };
 
-  const updateCurrentPage = (evt) => {
-    updateAnimeList(parseInt(evt.target.outerText)).then(() => {
-      window.scrollTo(0, 0);
-    });
-  };
+  const updateCurrentPage = useCallback(
+    (evt) => {
+      updateAnimeList(parseInt(evt.target.outerText)).then(() => {
+        window.scrollTo(0, 0);
+      });
+    },
+    [pageState.searchFields]
+  );
 
   return (
     <Layout>
