@@ -3,6 +3,7 @@ import _get from 'lodash/get';
 import _reduce from 'lodash/reduce';
 import AnimeList from '../../components/animeList';
 import CustomPagination from '../../components/pagination';
+import LoadingSpinner from '../../components/loadingSpinner';
 import SearchForm from '../../components/search/searchForm';
 import { Layout } from '../../components/layout';
 import { fetch } from '../../helpers/request';
@@ -129,7 +130,7 @@ const Search = () => {
         clearFilters={clearFilters}
       />
       {pageState.searchingStatus === true ? (
-        'Loading...'
+        <LoadingSpinner />
       ) : (
         <AnimeList list={pageState.animeList} />
       )}

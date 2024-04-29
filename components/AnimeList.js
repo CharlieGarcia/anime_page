@@ -12,9 +12,6 @@ const styles = {
 const AnimeList = ({ list = [] }) => {
   return (
     <Box sx={styles}>
-      {!list.length
-        ? 'Content not found. Please try with other parameters'
-        : null}
       {list.length
         ? list.map((anime, index) => <AnimeCard key={index} {...anime} />)
         : null}
