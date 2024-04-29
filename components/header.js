@@ -8,13 +8,13 @@ export const Header = () => {
     padding: '24px',
     position: 'sticky',
     top: '0',
-    zIndex: '1'
+    zIndex: '2'
   };
 
   return (
     <Box component="header" sx={headerStyles}>
       <Link href="/" style={{ textDecoration: 'none', fontSize: '24px' }}>
-        Anime RD
+        My Anime
       </Link>
     </Box>
   );
