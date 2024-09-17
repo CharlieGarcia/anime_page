@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import Link from 'next/link';
 import LoadingSpinner from '../components/loadingSpinner';
+import { Layout } from '../components/layout';
 import AnimeList from '../components/animeList';
 import useFetch from '../hooks/useFetch';
 
@@ -12,7 +13,7 @@ const Home = () => {
   });
 
   return (
-    <>
+    <Layout>
       <h1>My Anime</h1>
       <p>
         This is an anime page using the{' '}
@@ -29,9 +30,9 @@ const Home = () => {
         <Link href="/search">Browse section</Link>
       </p>
       <h2>Top {ANIME_LIMIT} Trending Animes</h2>
-      {error ? error : <AnimeList list={data} />}
+      {error ? <pre>error</pre> : <AnimeList list={data} />}
       {isLoading && <LoadingSpinner />}
-    </>
+    </Layout>
   );
 };
 

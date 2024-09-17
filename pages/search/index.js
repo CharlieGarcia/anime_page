@@ -45,7 +45,7 @@ const Search = () => {
     });
   };
 
-  const updateAnimeList = (currentPage) => {
+  const updateAnimeList = useCallback((currentPage) => {
     const offset = currentPage > 1 ? currentPage * ITEMS_PER_PAGE : currentPage;
     const searchParams =
       _reduce(
@@ -82,7 +82,7 @@ const Search = () => {
         searchingStatus: false
       }));
     });
-  };
+  }, [pageState.searchFields]);
 
   const fetchAnimes = (evt) => {
     setPageState((existingState) => ({
@@ -112,14 +112,11 @@ const Search = () => {
     }));
   };
 
-  const updateCurrentPage = useCallback(
-    (evt) => {
-      updateAnimeList(parseInt(evt.target.outerText)).then(() => {
-        window.scrollTo(0, 0);
-      });
-    },
-    [pageState.searchFields]
-  );
+  const updateCurrentPage = (evt) => {
+    updateAnimeList(parseInt(evt.target.outerText)).then(() => {
+      window.scrollTo(0, 0);
+    });
+  };
 
   return (
     <Layout>

@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import _get from 'lodash/get';
 
 import { fetch } from '../helpers/request';
 
 function useFetch(endpoint, options) {
-  const [result, setResult] = useState({ data: [], count: 0, error: null });
+  const [data, setData] = useState([]);
+  const [error, setError] = useState('');
+  const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -12,23 +14,22 @@ function useFetch(endpoint, options) {
       setIsLoading(true);
       const response = await fetch(endpoint, options);
 
-      setResult({
-        data: _get(response, 'data.data', []),
-        count: _get(response, 'data.meta.count') || 0,
-        error: null
-      });
+      setData(_get(response, 'data.data', []));
+      setCount(_get(response, 'data.meta.count') || 0);
       setIsLoading(false);
     };
 
     fetchAnimeList().catch((e) => {
       console.error(e);
 
-      setResult({ data: [], count: 0, error: e });
+      setData([]);
+      setCount(0);
+      setError(e.message);
       setIsLoading(false);
     });
   }, []);
 
-  return { ...result, isLoading };
+  return { data, error, count, isLoading };
 }
 
 export default useFetch;

@@ -1,14 +1,27 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { ThemeContext, ThemeProvider } from '../contexts/themeContext';
 import { Header } from './header';
 import { Footer } from './footer';
 import { Container } from '@mui/material';
 
-export const Layout = ({ children }) => {
+const Inner = ({ children }) => {
+  const { darkTheme } = useContext(ThemeContext);
+
   return (
-    <Container maxWidth="lg">
-      <Header />
-      <Container component="main">{children}</Container>
-      <Footer />
-    </Container>
+    <div data-theme={darkTheme ? 'dark' : 'light'}>
+      <Container maxWidth="lg">
+        <Header />
+        <Container component="main">{children}</Container>
+        <Footer />
+      </Container>
+    </div>
+  );
+};
+
+export const Layout = (props) => {
+  return (
+    <ThemeProvider>
+      <Inner {...props} />
+    </ThemeProvider>
   );
 };
