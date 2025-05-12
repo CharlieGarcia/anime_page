@@ -1,15 +1,12 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import LoadingSpinner from '../components/loadingSpinner';
 import AnimeList from '../components/animeList';
-import useFetch from '../hooks/useFetch';
+import { fetch } from '../helpers/request';
+import _get from 'lodash/get';
 
 const ANIME_LIMIT = 12;
 
-const Home = () => {
-  const { data, error, isLoading } = useFetch('/trending/anime', {
-    limit: ANIME_LIMIT
-  });
+const Home = ({ data, error }) => {
 
   return (
     <>
@@ -30,9 +27,29 @@ const Home = () => {
       </p>
       <h2>Top {ANIME_LIMIT} Trending Animes</h2>
       {error ? error : <AnimeList list={data} />}
-      {isLoading && <LoadingSpinner />}
     </>
   );
+};
+
+export async function getServerSideProps() {
+  let data = [];
+  let error = null;
+
+  try {
+    const response = await fetch('/trending/anime', {
+      limit: ANIME_LIMIT
+    });
+    data = _get(response, 'data.data', []);
+  } catch (err) {
+    error = err;
+  }
+
+  return {
+    props: {
+      data,
+      error
+    }
+  };
 };
 
 export default Home;
