@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import _get from 'lodash/get';
-import Image from '../../components/image';
-import Accordion from '../../components/accordion';
-import { Layout } from '../../components/layout';
-import { fetch } from '../../helpers/request';
+import Image from '@/components/image';
+import Accordion from '@/components/accordion';
+import { Layout } from '@/components/layout';
+import { fetch } from '@/helpers/request';
+import useFetch from '@/hooks/useFetch';
 
 const styles = {
   tags: {
@@ -43,46 +44,43 @@ async function fetchCategories(id) {
   return categories;
 }
 
-async function fetchEpisodes(id) {
-  let episodes = [];
-  const response = await fetch(`/anime/${id}/relationships/episodes`);
-  const unHydratedEpisodes = _get(response, 'data.data', []);
-
-  for (let episode of unHydratedEpisodes) {
-    const episodeData = await fetch(`/episodes/${episode.id}`);
-
-    if (!episodeData.errors) {
-      const { attributes, id } = episodeData.data.data;
-      const title = attributes.canonicalTitle || 'Not Aired Yet';
-      const number = attributes.number || '';
-      const thumbnailUrl = attributes.thumbnail?.original || '';
-      const synopsis = attributes.synopsis || '';
-
-      if (!number && !thumbnailUrl && !synopsis) {
-        continue;
-      }
-
-      episodes.push({
-        id,
-        title,
-        number,
-        thumbnailUrl,
-        synopsis
-      });
-    }
-  }
-
-  return episodes;
-}
-
 function Detail({ info, categories, error }) {
-  const [episodes, setEpisodes] = useState([]);
+  const hydrateEpisodes = useCallback(async (unHydratedEpisodes) => {
+    let episodes = [];
+    for (let episode of unHydratedEpisodes) {
+      const episodeData = await fetch(`/episodes/${episode.id}`);
 
-  useEffect(() => {
-    fetchEpisodes(info.id).then((episodes) => {
-      setEpisodes(episodes);
-    });
-  }, [info.id]);
+      if (!episodeData.errors) {
+        const { attributes, id } = episodeData.data.data;
+        const title = attributes.canonicalTitle || 'Not Aired Yet';
+        const number = attributes.number || '';
+        const thumbnailUrl = attributes.thumbnail?.original || '';
+        const synopsis = attributes.synopsis || '';
+
+        if (!number && !thumbnailUrl && !synopsis) {
+          continue;
+        }
+
+        episodes.push({
+          id,
+          title,
+          number,
+          thumbnailUrl,
+          synopsis
+        });
+      }
+    }
+
+    return episodes;
+  }, []);
+
+  const {
+    data: episodes,
+    isLoading: loadingEpisodes,
+    error: episodesError
+  } = useFetch(`/anime/${info.id}/relationships/episodes`, {
+    onSuccess: hydrateEpisodes
+  });
 
   if (error) {
     return <Layout>{error}</Layout>;
@@ -119,29 +117,26 @@ function Detail({ info, categories, error }) {
           </Button>
         ))}
       </Box>
-      {episodes.length > 0 && (
-        <>
-          <Box style={{ marginTop: '15px' }}>
-            <Typography
-              variant="h6"
-              color="text.secondary"
-              sx={{ marginBottom: '15px' }}>
-              Episodes:
-            </Typography>
-            <Box
-              style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {episodes?.map((episode) => (
-                <Accordion
-                  key={episode.id}
-                  title={`${episode.number} - ${episode.title}`}
-                  synopsis={episode.synopsis}
-                  thumbnailUrl={episode.thumbnailUrl}
-                />
-              ))}
-            </Box>
-          </Box>
-        </>
-      )}
+      <Box style={{ marginTop: '15px' }}>
+        <Typography
+          variant="h6"
+          color="text.secondary"
+          sx={{ marginBottom: '15px' }}>
+          Episodes:
+        </Typography>
+        <Box style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          {loadingEpisodes && <Typography>Loading episodes...</Typography>}
+          {episodesError && <Typography>{episodesError}</Typography>}
+          {episodes?.map((episode) => (
+            <Accordion
+              key={episode.id}
+              title={`${episode.number} - ${episode.title}`}
+              synopsis={episode.synopsis}
+              thumbnailUrl={episode.thumbnailUrl}
+            />
+          ))}
+        </Box>
+      </Box>
     </Layout>
   );
 }

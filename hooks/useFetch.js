@@ -1,34 +1,36 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import _get from 'lodash/get';
 
 import { fetch } from '../helpers/request';
 
 function useFetch(endpoint, options) {
-  const [result, setResult] = useState({ data: [], count: 0, error: null });
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   useEffect(() => {
     const fetchAnimeList = async () => {
-      setIsLoading(true);
       const response = await fetch(endpoint, options);
+      let _result = _get(response, 'data.data', []);
 
-      setResult({
-        data: _get(response, 'data.data', []),
-        count: _get(response, 'data.meta.count') || 0,
-        error: null
-      });
+      if (typeof options?.onSuccess === 'function') {
+        _result = await options.onSuccess(_result);
+      }
+
+      setData(_result);
       setIsLoading(false);
     };
 
     fetchAnimeList().catch((e) => {
       console.error(e);
 
-      setResult({ data: [], count: 0, error: e });
+      setData([]);
+      setError(e);
       setIsLoading(false);
     });
-  }, []);
+  }, [endpoint, options?.onSuccess]);
 
-  return { ...result, isLoading };
+  return { data, error, isLoading };
 }
 
 export default useFetch;
