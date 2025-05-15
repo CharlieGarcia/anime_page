@@ -104,7 +104,7 @@ function Detail({ info, categories, error }) {
         <Typography variant="h6" color="text.secondary">
           Synopsis:
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body1" color="text.secondary">
           {info.attributes?.synopsis}
         </Typography>
         {categories.map((category) => (

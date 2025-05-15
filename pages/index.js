@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import AnimeList from '../components/animeList';
-import { fetch } from '../helpers/request';
+import AnimeList from '@/components/animeList';
+import { fetch } from '@/helpers/request';
 import _get from 'lodash/get';
 
 const ANIME_LIMIT = 12;
