@@ -28,6 +28,19 @@
   },
   "settings": {
     "import/resolver": {
+      "alias": {
+        "map": [
+          ["@", "."],
+          ["@/components", "./components"],
+          ["@/hooks", "./hooks"],
+          ["@/helpers", "./helpers"],
+          ["@/pages", "./pages"],
+          ["@/public", "./public"],
+          ["@/styles", "./styles"],
+          ["@/constants", "./constants"]
+        ],
+        "extensions": [".js", ".jsx"]
+      },
       "node": {
         "extensions": [".js", ".jsx"],
         "moduleDirectory": ["node_modules", "src/"]
