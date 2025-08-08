@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import _get from 'lodash/get';
 import _reduce from 'lodash/reduce';
-import AnimeList from '../../components/animeList';
-import CustomPagination from '../../components/pagination';
-import LoadingSpinner from '../../components/loadingSpinner';
-import SearchForm from '../../components/search/searchForm';
-import { Layout } from '../../components/layout';
-import { fetch } from '../../helpers/request';
+import AnimeList from '@/components/animeList';
+import CustomPagination from '@/components/pagination';
+import LoadingSpinner from '@/components/loadingSpinner';
+import SearchForm from '@/components/search/SearchForm';
+import { Layout } from '@/components/layout';
+import { fetch } from '@/helpers/request';
 import {
   ANIME_SEASONS,
   ANIME_STATUS,
@@ -14,7 +14,7 @@ import {
   ANIME_SUBTYPE,
   ANIME_AGE_RATING,
   ITEMS_PER_PAGE
-} from '../../constants';
+} from '@/constants';
 
 const Search = () => {
   const [pageState, setPageState] = useState({
