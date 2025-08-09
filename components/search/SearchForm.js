@@ -33,16 +33,17 @@ function SearchForm({
   return (
     <form onSubmit={fetchAnimes}>
       <Grid container spacing={2}>
-        <Grid xs={12} sm={6} md={3} sx={{ marginTop: '8px' }} item>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
           <CustomTextField
             label="Anime Year"
             id="year"
             name="seasonYear"
             value={searchFields.seasonYear}
             onChange={updateSearchField('seasonYear')}
+            fullWidth
           />
         </Grid>
-        <Grid xs={12} sm={6} md={3} sx={{ marginTop: '8px' }} item>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
           <CustomSelect
             value={searchFields.season}
             list={Object.values(ANIME_SEASONS)}
@@ -51,7 +52,7 @@ function SearchForm({
             fullWidth
           />
         </Grid>
-        <Grid xs={12} sm={6} md={3} sx={{ marginTop: '8px' }} item>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
           <CustomSelect
             value={searchFields.status}
             list={Object.values(ANIME_STATUS)}
@@ -60,7 +61,7 @@ function SearchForm({
             fullWidth
           />
         </Grid>
-        <Grid xs={12} sm={6} md={3} sx={{ marginTop: '8px' }} item>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
           <CustomSelect
             value={searchFields.categories}
             list={genres}
@@ -69,7 +70,7 @@ function SearchForm({
             fullWidth
           />
         </Grid>
-        <Grid xs={12} sm={6} md={3} sx={{ marginTop: '8px' }} item>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
           <CustomSelect
             value={searchFields.sort}
             list={Object.values(ANIME_SORT)}
@@ -78,7 +79,7 @@ function SearchForm({
             fullWidth
           />
         </Grid>
-        <Grid xs={12} sm={6} md={3} sx={{ marginTop: '8px' }} item>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
           <CustomSelect
             value={searchFields.subtype}
             list={Object.values(ANIME_SUBTYPE)}
@@ -87,7 +88,7 @@ function SearchForm({
             fullWidth
           />
         </Grid>
-        <Grid xs={12} sm={6} md={3} sx={{ marginTop: '8px' }} item>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
           <CustomSelect
             value={searchFields.ageRating}
             list={Object.values(ANIME_AGE_RATING)}
@@ -97,7 +98,7 @@ function SearchForm({
           />
         </Grid>
       </Grid>
-      <Grid xs={12} sm={6} md={3} sx={{ marginTop: '8px' }} item>
+      <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
         <Button variant="contained" type="submit">
           Search
         </Button>
