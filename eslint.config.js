@@ -1,0 +1,55 @@
+import { defineConfig } from 'eslint/config';
+
+export default defineConfig({
+  extends: [
+    'eslint:recommended',
+    'plugin:import/errors',
+    'plugin:react/recommended',
+    'plugin:jsx-a11y/recommended',
+    'plugin:react-hooks/recommended',
+    'prettier'
+  ],
+  rules: {
+    'react/prop-types': 0,
+    'react/react-in-jsx-scope': 0
+  },
+  plugins: ['react', 'import', 'jsx-a11y'],
+  parser: '@babel/eslint-parser',
+  parserOptions: {
+    requireConfigFile: false,
+    ecmaVersion: 2021,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true
+    }
+  },
+  env: {
+    es6: true,
+    browser: true,
+    node: true
+  },
+  settings: {
+    'import/resolver': {
+      alias: {
+        map: [
+          ['@', '.'],
+          ['@/components', './components'],
+          ['@/hooks', './hooks'],
+          ['@/helpers', './helpers'],
+          ['@/pages', './pages'],
+          ['@/public', './public'],
+          ['@/styles', './styles'],
+          ['@/constants', './constants']
+        ],
+        extensions: ['.js', '.jsx']
+      },
+      node: {
+        extensions: ['.js', '.jsx'],
+        moduleDirectory: ['node_modules', 'src/']
+      }
+    },
+    react: {
+      version: 'detect'
+    }
+  }
+});
