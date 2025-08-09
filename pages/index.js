@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import { Layout } from '@/components/layout';
 import AnimeList from '@/components/animeList';
 import { fetch } from '@/helpers/request';
 import _get from 'lodash/get';
@@ -10,7 +9,8 @@ const ANIME_LIMIT = 12;
 const Home = ({ data, error }) => {
 
   return (
-    <Layout>
+    <>
+      <h1>My Anime</h1>
       <p>
         This is an anime page using the{' '}
         <a
@@ -27,7 +27,7 @@ const Home = ({ data, error }) => {
       </p>
       <h2>Top {ANIME_LIMIT} Trending Animes</h2>
       {error ? error : <AnimeList list={data} />}
-    </Layout>
+    </>
   );
 };
 
