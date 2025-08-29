@@ -8,7 +8,7 @@ import AnimeList from '@/components/animeList';
 
 function Related() {
   const router = useRouter();
-  const { id } = router.query;
+  const { slug } = router.query;
   const [relatedAnimes, setRelatedAnimes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -17,6 +17,7 @@ function Related() {
     if (router.isReady) {
       // Had to do it this way because of the response size when calling from the getServerSideProps
       const fetchRelatedAnimes = async () => {
+        const id = _get((await fetch(`/categories?filter[slug]=${slug}`)), 'data.data[0].id', '');
         const relatedAnimesResponse = await fetch(
           `/categories/${id}/relationships/anime`
         );
@@ -44,7 +45,7 @@ function Related() {
           setIsLoading(false);
         });
     }
-  }, [router.isReady, id]);
+  }, [router.isReady, slug]);
 
   return (
     <Layout>
