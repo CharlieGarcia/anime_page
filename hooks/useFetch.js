@@ -3,7 +3,7 @@ import _get from 'lodash/get';
 
 import { fetch } from '../helpers/request';
 
-function useFetch(endpoint, options) {
+function useFetch(endpoint, options = {}) {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,11 +11,7 @@ function useFetch(endpoint, options) {
   useEffect(() => {
     const fetchAnimeList = async () => {
       const response = await fetch(endpoint, options);
-      let _result = _get(response, 'data.data', []);
-
-      if (typeof options?.onSuccess === 'function') {
-        _result = await options.onSuccess(_result);
-      }
+      const _result = _get(response, 'data.data', []);
 
       setData(_result);
       setIsLoading(false);
@@ -28,7 +24,7 @@ function useFetch(endpoint, options) {
       setError(e);
       setIsLoading(false);
     });
-  }, [endpoint, options?.onSuccess]);
+  }, [endpoint]);
 
   return { data, error, isLoading };
 }
