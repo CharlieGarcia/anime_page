@@ -1,11 +1,13 @@
-import React, { useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import _get from 'lodash/get';
+import _kebabCase from 'lodash/kebabCase';
 import Image from '@/components/image';
 import Accordion from '@/components/accordion';
 import { Layout } from '@/components/layout';
 import { fetch } from '@/helpers/request';
-import useFetch from '@/hooks/useFetch';
+
+const EPISODES_PER_PAGE = 13;
 
 const styles = {
   tags: {
@@ -21,66 +23,89 @@ async function fetchAnimeInfo(id) {
 }
 
 async function fetchCategories(id) {
-  let categories = [];
-  const categoriesResponse = await fetch(
-    `/anime/${id}/relationships/categories`
-  );
-  const unHydratedCategories = _get(categoriesResponse, 'data.data', []);
+  const categoriesResponse = await fetch(`/anime/${id}/categories`);
 
-  for (let category of unHydratedCategories) {
-    const categoryData = await fetch(`/categories/${category.id}`);
-
-    if (!categoryData.errors) {
-      const { attributes, relationships, id } = categoryData.data.data;
-
-      categories.push({
-        id,
-        title: attributes.title,
-        relatedAnimesLink: relationships?.anime?.links?.related
-      });
-    }
-  }
-
-  return categories;
+  return _get(categoriesResponse, 'data.data', []).map((category) => ({
+    slug: `/related/${_kebabCase(category.attributes.title)}`,
+    id: category.id,
+    title: category.attributes.title
+  }));
 }
 
 function Detail({ info, categories, error }) {
-  const hydrateEpisodes = useCallback(async (unHydratedEpisodes) => {
-    let episodes = [];
-    for (let episode of unHydratedEpisodes) {
-      const episodeData = await fetch(`/episodes/${episode.id}`);
+  const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [data, setData] = useState({ episodes: [], totalEpisodes: 0 });
+  const sentinelRef = useRef(null);
 
-      if (!episodeData.errors) {
-        const { attributes, id } = episodeData.data.data;
-        const title = attributes.canonicalTitle || 'Not Aired Yet';
-        const number = attributes.number || '';
-        const thumbnailUrl = attributes.thumbnail?.original || '';
-        const synopsis = attributes.synopsis || '';
+  const fetchEpisodes = useCallback(async (id, offset = 0) => {
+    const episodesResponse = await fetch(
+      `/anime/${id}/episodes?page[limit]=${EPISODES_PER_PAGE}&page[offset]=${offset}`
+    );
 
-        if (!number && !thumbnailUrl && !synopsis) {
-          continue;
-        }
-
-        episodes.push({
-          id,
-          title,
-          number,
-          thumbnailUrl,
-          synopsis
-        });
-      }
-    }
-
-    return episodes;
+    return {
+      episodes: _get(episodesResponse, 'data.data', []).map((episode) => ({
+        id: episode.id,
+        title: episode.attributes.canonicalTitle || 'Not Aired Yet',
+        number: episode.attributes.number || '',
+        thumbnailUrl: episode.attributes.thumbnail?.original || '',
+        synopsis: episode.attributes.synopsis || ''
+      })),
+      totalEpisodes: _get(episodesResponse, 'data.meta.count', 0)
+    };
   }, []);
 
-  const {
-    data: episodes,
-    isLoading: loadingEpisodes,
-    error: episodesError
-  } = useFetch(`/anime/${info.id}/relationships/episodes`, {
-    onSuccess: hydrateEpisodes
-  });
+  const handleIntersection = useCallback(
+    (entries) => {
+      const [entry] = entries;
+      if (
+        entry.isIntersecting &&
+        !isLoadingEpisodes &&
+        data.episodes.length < data.totalEpisodes
+      ) {
+        setOffset((prev) => prev + EPISODES_PER_PAGE);
+        console.log('loading more episodes');
+      }
+    },
+    [isLoadingEpisodes, data.episodes.length, data.totalEpisodes]
+  );
+
+  useEffect(() => {
+    const loadMoreEpisodes = async () => {
+      try {
+        setIsLoadingEpisodes(true);
+        const data = await fetchEpisodes(info.id, offset);
+        setData((prev) => ({
+          episodes: [...prev.episodes, ...data.episodes],
+          totalEpisodes: data.totalEpisodes
+        }));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoadingEpisodes(false);
+      }
+    };
+
+    loadMoreEpisodes();
+  }, [offset, info.id, fetchEpisodes]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(handleIntersection, {
+      root: null,
+      threshold: 0.1
+    });
+
+    const currentSentinel = sentinelRef.current;
+    if (currentSentinel) {
+      observer.observe(currentSentinel);
+    }
+
+    return () => {
+      if (currentSentinel) {
+        observer.unobserve(currentSentinel);
+      }
+    };
+  }, [handleIntersection]);
 
   if (error) {
     return <Layout>{error}</Layout>;
@@ -90,6 +115,7 @@ function Detail({ info, categories, error }) {
     <Layout>
       <Typography variant="h5" color="text.secondary">
         {info.attributes?.titles?.en_jp}
+        {` (${data.totalEpisodes} episodes)`}
       </Typography>
       <Box>
         {info?.attributes?.coverImage?.large && (
@@ -112,7 +138,7 @@ function Detail({ info, categories, error }) {
             variant="outlined"
             style={styles.tags}
             key={category.id}
-            href={`/related/${category.id}`}>
+            href={category.slug}>
             {category.title}
           </Button>
         ))}
@@ -125,9 +151,7 @@ function Detail({ info, categories, error }) {
           Episodes:
         </Typography>
         <Box style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-          {loadingEpisodes && <Typography>Loading episodes...</Typography>}
-          {episodesError && <Typography>{episodesError}</Typography>}
-          {episodes?.map((episode) => (
+          {data.episodes?.map((episode) => (
             <Accordion
               key={episode.id}
               title={`${episode.number} - ${episode.title}`}
@@ -135,6 +159,11 @@ function Detail({ info, categories, error }) {
               thumbnailUrl={episode.thumbnailUrl}
             />
           ))}
+          <div ref={sentinelRef} style={{ height: '20px' }} />
+          {isLoadingEpisodes && <Typography>Loading episodes...</Typography>}
+          {data.episodes.length === 0 && !isLoadingEpisodes && (
+            <Typography>No episodes found</Typography>
+          )}
         </Box>
       </Box>
     </Layout>
