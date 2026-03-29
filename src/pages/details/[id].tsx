@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, CSSProperties } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import _get from 'lodash/get';
 import _kebabCase from 'lodash/kebabCase';
@@ -7,9 +7,9 @@ import Accordion from '@/components/accordion';
 import { Layout } from '@/components/layout';
 import { fetch } from '@/helpers/request';
 
-const EPISODES_PER_PAGE = 13;
+const EPISODES_PER_PAGE: number = 13;
 
-const styles = {
+const styles: { tags: CSSProperties } = {
   tags: {
     marginRight: 15,
     marginTop: 15,
@@ -17,12 +17,18 @@ const styles = {
   }
 };
 
-async function fetchAnimeInfo(id) {
+async function fetchAnimeInfo(id: string) {
   const response = await fetch(`/anime/${id}`);
   return _get(response, 'data.data', {});
 }
 
-async function fetchCategories(id) {
+interface CategoryTags {
+  slug: string;
+  id: string;
+  title: string;
+}
+
+async function fetchCategories(id: string): Promise<CategoryTags[]> {
   const categoriesResponse = await fetch(`/anime/${id}/categories`);
 
   return _get(categoriesResponse, 'data.data', []).map((category) => ({
@@ -32,19 +38,46 @@ async function fetchCategories(id) {
   }));
 }
 
-function Detail({ info, categories, error }) {
+interface AnimeInfoResponse {
+  attributes: {
+    titles: {
+      en_jp: string;
+    };
+    coverImage: {
+      large: string;
+    };
+    synopsis: string;
+  };
+  id: string;
+}
+
+interface DetailProps {
+  info: AnimeInfoResponse;
+  categories: CategoryTags[];
+  error: string | null;
+}
+
+interface Episode {
+  id: string;
+  title: string;
+  number: string;
+  thumbnailUrl: string;
+  synopsis: string;
+}
+
+function Detail({ info, categories, error }: DetailProps) {
   const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(false);
   const [offset, setOffset] = useState(0);
   const [data, setData] = useState({ episodes: [], totalEpisodes: 0 });
   const sentinelRef = useRef(null);
 
-  const fetchEpisodes = useCallback(async (id, offset = 0) => {
+  const fetchEpisodes = useCallback(async (id: string, offset: number = 0): Promise<{ episodes: Episode[], totalEpisodes: number }> => {
     const episodesResponse = await fetch(
       `/anime/${id}/episodes?page[limit]=${EPISODES_PER_PAGE}&page[offset]=${offset}`
     );
 
     return {
-      episodes: _get(episodesResponse, 'data.data', []).map((episode) => ({
+      episodes: _get(episodesResponse, 'data.data', []).map((episode): Episode => ({
         id: episode.id,
         title: episode.attributes.canonicalTitle || 'Not Aired Yet',
         number: episode.attributes.number || '',

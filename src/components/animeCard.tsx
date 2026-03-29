@@ -6,7 +6,24 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
 
-const AnimeCard = ({ id, attributes }) => {
+interface AnimeCardProps {
+  id: string;
+  attributes: {
+    subtype: string;
+    titles: {
+      en?: string;
+      en_jp?: string;
+      ja_jp?: string;
+    };
+    posterImage: {
+      small?: string;
+    };
+    episodeCount?: string;
+    episodeLength?: string;
+  }
+}
+
+const AnimeCard = ({ id, attributes }: AnimeCardProps) => {
   const {
     subtype = '',
     titles = {},

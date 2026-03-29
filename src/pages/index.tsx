@@ -8,7 +8,6 @@ import _get from 'lodash/get';
 const ANIME_LIMIT = 12;
 
 const Home = ({ data, error }) => {
-
   return (
     <Layout>
       <p>
@@ -50,6 +49,6 @@ export async function getServerSideProps() {
       error
     }
   };
-};
+}
 
 export default Home;

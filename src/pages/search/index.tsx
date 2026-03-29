@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import _get from 'lodash/get';
+import _set from 'lodash/set';
 import _reduce from 'lodash/reduce';
 import AnimeList from '@/components/animeList';
 import CustomPagination from '@/components/pagination';
@@ -16,6 +17,31 @@ import {
   ITEMS_PER_PAGE
 } from '@/constants';
 
+type searchFieldsType = {
+  seasonYear: number;
+  sort: string;
+  status: string;
+  season: string;
+  categories: string;
+  subtype: string;
+  ageRating: string;
+};
+
+type searchStateType = {
+  searchFields: searchFieldsType;
+  searchingStatus: boolean;
+  currentPage: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  animeList: any[];
+  count: number;
+};
+
+type searchOptionsRequestType = {
+  'page[offset]': number;
+  'page[limit]': number;
+  [key: string]: string | number;
+};
+
 const Search = () => {
   const [pageState, setPageState] = useState({
     searchFields: {
@@ -31,31 +57,34 @@ const Search = () => {
     currentPage: 1,
     animeList: [],
     count: 0
-  });
+  } as searchStateType);
 
-  const updateSearchField = (fieldName) => (evt) => {
-    setPageState((existingState) => {
-      const updatedSearchFieldsState = existingState.searchFields;
-      updatedSearchFieldsState[fieldName] = evt.target.value;
+  const updateSearchField =
+    (fieldName: keyof searchStateType['searchFields']) =>
+    ({ target }: { target: HTMLInputElement }) => {
+      setPageState((existingState: searchStateType) => {
+        const updatedSearchFieldsState = existingState.searchFields;
+        _set(updatedSearchFieldsState, fieldName, target.value);
 
-      return {
-        ...existingState,
-        searchFields: updatedSearchFieldsState
-      };
-    });
-  };
+        return {
+          ...existingState,
+          searchFields: updatedSearchFieldsState
+        };
+      });
+    };
 
-  const updateAnimeList = (currentPage) => {
+  const updateAnimeList = (currentPage: number) => {
     const offset = currentPage > 1 ? currentPage * ITEMS_PER_PAGE : currentPage;
+
     const searchParams =
       _reduce(
         pageState.searchFields,
         (result, value, key) => {
           if (value) {
             if (key !== 'sort') {
-              result[`filter[${key}]`] = value;
+              _set(result, `filter[${key}]`, value);
             } else {
-              result[`sort`] = value;
+              _set(result, `sort`, value);
             }
           }
 
@@ -64,14 +93,10 @@ const Search = () => {
         {}
       ) || {};
     const options = {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
-      },
       'page[offset]': offset,
       'page[limit]': ITEMS_PER_PAGE,
       ...searchParams
-    };
+    } as searchOptionsRequestType;
 
     return fetch('/anime', options).then((resp) => {
       setPageState((existingState) => ({
@@ -84,7 +109,7 @@ const Search = () => {
     });
   };
 
-  const fetchAnimes = (evt) => {
+  const fetchAnimes = (evt: Event) => {
     setPageState((existingState) => ({
       ...existingState,
       searchingStatus: true
@@ -112,14 +137,12 @@ const Search = () => {
     }));
   };
 
-  const updateCurrentPage = useCallback(
-    (evt) => {
-      updateAnimeList(parseInt(evt.target.outerText)).then(() => {
-        window.scrollTo(0, 0);
-      });
-    },
-    [pageState.searchFields]
-  );
+  const updateCurrentPage = (evt: React.ChangeEvent<unknown>) => {
+    const input = evt.target as HTMLElement;
+    updateAnimeList(parseInt(input.outerText)).then(() => {
+      window.scrollTo(0, 0);
+    });
+  };
 
   return (
     <Layout>

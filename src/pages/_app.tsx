@@ -1,6 +1,6 @@
 import React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import { createTheme, ThemeProvider } from '@mui/material';
+import { createTheme, ThemeProvider, PaletteMode } from '@mui/material';
 import ColorModeContext from '../context/theme';
 
 export default function App({ Component, pageProps }) {
@@ -40,7 +40,7 @@ export default function App({ Component, pageProps }) {
     () =>
       createTheme({
         palette: {
-          mode,
+          mode: mode as PaletteMode,
           ...(mode === 'dark' && {
             background: {
               default: '#121212',
