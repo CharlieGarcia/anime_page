@@ -2,13 +2,13 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Box, Typography } from '@mui/material';
 import _get from 'lodash/get';
 import { useRouter } from 'next/router';
-import { Layout } from '@/components/layout';
+import Layout from '@/components/Layout';
 import { fetch } from '@/helpers/request';
-import AnimeList from '@/components/animeList';
+import AnimeList from '@/components/AnimeList';
 
-const ANIMES_PER_PAGE = 13;
+const ANIMES_PER_PAGE = 8;
 
-function Related() {
+const Related = () => {
   const router = useRouter();
   const { slug } = router.query;
   const [error, setError] = useState('');

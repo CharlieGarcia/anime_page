@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 
-export const Footer = () => {
+const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
@@ -15,3 +15,5 @@ export const Footer = () => {
     </Box>
   );
 };
+
+export default Footer;

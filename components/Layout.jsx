@@ -1,9 +1,9 @@
 import React from 'react';
-import { Header } from './header';
-import { Footer } from './footer';
+import Header from './Header';
+import Footer from './Footer';
 import { Container } from '@mui/material';
 
-export const Layout = ({ children }) => {
+const Layout = ({ children }) => {
   return (
     <Container maxWidth="lg">
       <Header />
@@ -12,3 +12,5 @@ export const Layout = ({ children }) => {
     </Container>
   );
 };
+
+export default Layout;

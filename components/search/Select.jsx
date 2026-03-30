@@ -2,7 +2,7 @@ import React from 'react';
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import _startCase from 'lodash/startCase';
 
-function CustomSelect({ list, handleChange, name, value, fullWidth = false }) {
+const CustomSelect = ({ list, handleChange, name, value, fullWidth = false }) => {
   return (
     <FormControl fullWidth={fullWidth}>
       <InputLabel htmlFor={name}>{name}</InputLabel>

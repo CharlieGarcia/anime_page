@@ -11,12 +11,12 @@ import {
   ANIME_AGE_RATING
 } from '@/constants';
 
-function SearchForm({
+const SearchForm = ({
   searchFields,
   clearFilters,
   fetchAnimes,
   updateSearchField
-}) {
+}) => {
   const [genres, setGenres] = useState([]);
 
   useEffect(() => {
@@ -108,6 +108,6 @@ function SearchForm({
       </Grid>
     </form>
   );
-}
+};
 
 export default SearchForm;

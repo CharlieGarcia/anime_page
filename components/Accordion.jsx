@@ -4,9 +4,9 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import Image from './image';
+import Image from './Image';
 
-export default function CustomAccordion({ title, synopsis, thumbnailUrl }) {
+const CustomAccordion = ({ title, synopsis, thumbnailUrl }) => {
   return (
     <div>
       <Accordion>
@@ -38,3 +38,5 @@ export default function CustomAccordion({ title, synopsis, thumbnailUrl }) {
     </div>
   );
 }
+
+export default CustomAccordion;
