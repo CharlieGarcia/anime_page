@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
+import Modal from './Modal';
 
 const AnimeCard = ({ id, attributes }) => {
   const {
@@ -21,9 +22,14 @@ const AnimeCard = ({ id, attributes }) => {
   } = titles;
   const { small: posterImageUrl } = posterImage || { small: '' };
   const titleEnglish = englishTitle || enGlishJapaneseTitle;
+  const [showModal, setShowModal] = useState(false);
 
   return (
-    <Link style={{ textDecoration: 'none' }} href={`/details/${id}`}>
+    <Link
+      style={{ textDecoration: 'none' }}
+      href={`/details/${id}`}
+      onMouseEnter={() => setShowModal(true)}
+      onMouseLeave={() => setShowModal(false)}>
       <Card sx={{ maxWidth: '284px' }}>
         <CardActionArea>
           {posterImageUrl && (
@@ -53,6 +59,7 @@ const AnimeCard = ({ id, attributes }) => {
           </CardContent>
         </CardActionArea>
       </Card>
+      <Modal showModal={showModal}>Hello from the modal portal</Modal>
     </Link>
   );
 };
