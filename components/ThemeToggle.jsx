@@ -60,7 +60,7 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   }
 }));
 
-export const ThemeToggle = () => {
+const ThemeToggle = () => {
   const theme = useTheme();
   const colorMode = React.useContext(ColorModeContext);
 
@@ -71,3 +71,5 @@ export const ThemeToggle = () => {
     />
   );
 };
+
+export default ThemeToggle;

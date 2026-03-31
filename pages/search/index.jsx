@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import _get from 'lodash/get';
 import _reduce from 'lodash/reduce';
-import AnimeList from '@/components/animeList';
-import CustomPagination from '@/components/pagination';
-import LoadingSpinner from '@/components/loadingSpinner';
+import AnimeList from '@/components/AnimeList';
+import CustomPagination from '@/components/Pagination';
+import LoadingSpinner from '@/components/Loading';
 import SearchForm from '@/components/search/SearchForm';
-import { Layout } from '@/components/layout';
+import Layout from '@/components/Layout';
 import { fetch } from '@/helpers/request';
 import {
   ANIME_SEASONS,

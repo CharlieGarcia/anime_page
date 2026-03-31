@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import _get from 'lodash/get';
 import _kebabCase from 'lodash/kebabCase';
-import Image from '@/components/image';
-import Accordion from '@/components/accordion';
-import { Layout } from '@/components/layout';
+import Image from '@/components/Image';
+import Accordion from '@/components/Accordion';
+import Layout from '@/components/Layout';
 import { fetch } from '@/helpers/request';
 
 const EPISODES_PER_PAGE = 13;
@@ -32,7 +32,7 @@ async function fetchCategories(id) {
   }));
 }
 
-function Detail({ info, categories, error }) {
+const Detail = ({ info, categories, error }) => {
   const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(false);
   const [offset, setOffset] = useState(0);
   const [data, setData] = useState({ episodes: [], totalEpisodes: 0 });

@@ -1,9 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { Box } from '@mui/material';
-import { ThemeToggle } from './themeToggle';
+import ThemeToggle from './ThemeToggle';
 
-export const Header = () => {
+const Header = () => {
   const headerStyles = [(theme) => ({
     backgroundColor: theme.palette.background.default,
     padding: '24px',
@@ -24,3 +24,5 @@ export const Header = () => {
     </Box>
   );
 };
+
+export default Header;

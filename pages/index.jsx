@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { Layout } from '@/components/layout';
-import AnimeList from '@/components/animeList';
+import Layout from '@/components/Layout';
+import AnimeList from '@/components/AnimeList';
 import { fetch } from '@/helpers/request';
 import _get from 'lodash/get';
 
