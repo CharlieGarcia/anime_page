@@ -1,4 +1,5 @@
 module.exports = {
+  reactCompiler: true,
   images: {
     remotePatterns: [
       {
