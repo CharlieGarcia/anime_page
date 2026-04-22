@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useCallback, useState } from 'react';
 import _get from 'lodash/get';
 import _reduce from 'lodash/reduce';

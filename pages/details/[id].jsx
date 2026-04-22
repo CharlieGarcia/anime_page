@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import _get from 'lodash/get';
