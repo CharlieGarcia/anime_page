@@ -4,10 +4,11 @@ import { Layout } from '@/components/layout';
 import AnimeList from '@/components/animeList';
 import { fetch } from '@/helpers/request';
 import _get from 'lodash/get';
+import { Anime } from '@/types';
 
 const ANIME_LIMIT = 12;
 
-const Home = ({ data, error }) => {
+const Home = ({ data, error }: { data: Anime[]; error: string | null }) => {
   return (
     <Layout>
       <p>
@@ -40,7 +41,7 @@ export async function getServerSideProps() {
     });
     data = _get(response, 'data.data', []);
   } catch (err) {
-    error = err;
+    error = err instanceof Error ? err.message : String(err);
   }
 
   return {

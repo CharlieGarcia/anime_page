@@ -1,15 +1,20 @@
 import React from 'react';
 import AnimeCard from './animeCard';
-import { Box } from '@mui/material';
+import { Box, SxProps } from '@mui/material';
+import { Anime } from '@/types';
 
-const styles = {
+const styles: SxProps = {
   display: 'grid',
   gridTemplateColumns: 'repeat(4, auto)',
   gridTemplateRows: 'auto',
   gap: '30px'
 };
 
-const AnimeList = ({ list = [] }) => {
+type AnimeListProps = {
+  list?: Anime[];
+};
+
+const AnimeList = ({ list = [] }: AnimeListProps): JSX.Element => {
   return (
     <Box sx={styles}>
       {list.length

@@ -5,29 +5,21 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
+import { Anime } from '@/types';
 
-interface AnimeCardProps {
-  id: string;
-  attributes: {
-    subtype: string;
-    titles: {
-      en?: string;
-      en_jp?: string;
-      ja_jp?: string;
-    };
-    posterImage: {
-      small?: string;
-    };
-    episodeCount?: string;
-    episodeLength?: string;
-  }
-}
+export type AnimeCardProps = Anime;
 
-const AnimeCard = ({ id, attributes }: AnimeCardProps) => {
+const AnimeCard = ({ id, attributes }: AnimeCardProps): JSX.Element => {
   const {
     subtype = '',
-    titles = {},
-    posterImage = {},
+    titles = {
+      en: '',
+      en_jp: '',
+      ja_jp: ''
+    },
+    posterImage = {
+      small: ''
+    },
     episodeCount = '',
     episodeLength = ''
   } = attributes;

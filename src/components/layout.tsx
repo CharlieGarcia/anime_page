@@ -3,7 +3,11 @@ import { Header } from './header';
 import { Footer } from './footer';
 import { Container } from '@mui/material';
 
-export const Layout = ({ children }) => {
+type LayoutProps = {
+  children: React.ReactNode;
+};
+
+export const Layout = ({ children }: LayoutProps) => {
   return (
     <Container maxWidth="lg">
       <Header />

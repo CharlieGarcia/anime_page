@@ -1,7 +1,11 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, SxProps } from '@mui/material';
 
-export const Footer = () => {
+const styles: SxProps = {
+  textAlign: 'center',
+}
+
+export const Footer = (): JSX.Element => {
   const year = new Date().getFullYear();
 
   return (
@@ -9,7 +13,7 @@ export const Footer = () => {
       <Typography
         variant="h6"
         color="text.secondary"
-        sx={{ textAlign: 'center' }}>
+        sx={styles}>
         &#169; Copyright {year}
       </Typography>
     </Box>

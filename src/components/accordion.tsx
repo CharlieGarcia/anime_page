@@ -1,18 +1,21 @@
-import React, { CSSProperties } from 'react';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
+import React from 'react';
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  SxProps
+} from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Image from './image';
 
-interface CustomAccordionProps {
+type CustomAccordionProps = {
   title: string;
   synopsis?: string;
   thumbnailUrl?: string;
-}
+};
 
-const styles: Record<string, CSSProperties> = {
+const styles: Record<string, SxProps> = {
   accordion: {
     display: 'flex',
     flexDirection: 'row',
@@ -32,7 +35,7 @@ export default function CustomAccordion({
   title,
   synopsis,
   thumbnailUrl
-}: CustomAccordionProps) {
+}: CustomAccordionProps): JSX.Element {
   return (
     <div>
       <Accordion>
@@ -42,18 +45,11 @@ export default function CustomAccordion({
           id="panel2-header">
           <Typography component="span">{title}</Typography>
         </AccordionSummary>
-        <AccordionDetails
-          style={styles.accordion}>
+        <AccordionDetails sx={styles.accordion}>
           {thumbnailUrl && (
-            <Image
-              style={styles.image}
-              src={thumbnailUrl}
-              alt="some_alt_text"
-            />
+            <Image sx={styles.image} src={thumbnailUrl} alt="some_alt_text" />
           )}
-          {synopsis && (
-            <Typography style={styles.synopsis}>{synopsis}</Typography>
-          )}
+          {synopsis && <Typography sx={styles.synopsis}>{synopsis}</Typography>}
         </AccordionDetails>
       </Accordion>
     </div>

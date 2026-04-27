@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Grid } from '@mui/material';
+import { Button, Grid, GridBaseProps, SelectChangeEvent, SxProps } from '@mui/material';
 import CustomTextField from './TextField';
 import CustomSelect from './Select';
 import { fetch, formatGenres } from '@/helpers/request';
@@ -10,14 +10,22 @@ import {
   ANIME_SUBTYPE,
   ANIME_AGE_RATING
 } from '@/constants';
+import { SearchFieldsType } from '@/types';
+
+type SearchFormProps = {
+  searchFields: SearchFieldsType;
+  clearFilters: () => void;
+  fetchAnimes: (event: React.FormEvent<HTMLFormElement>) => void;
+  updateSearchField: (name: keyof SearchFieldsType) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent) => void;
+};
 
 function SearchForm({
   searchFields,
   clearFilters,
   fetchAnimes,
   updateSearchField
-}) {
-  const [genres, setGenres] = useState([]);
+}: SearchFormProps) {
+  const [genres, setGenres] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchGenres = async () => {
@@ -30,10 +38,13 @@ function SearchForm({
     fetchGenres();
   }, []);
 
+  const separationMargin = { marginTop: '8px' } as SxProps;
+  const gridSize = { xs: 12, sm: 6, md: 3 } as GridBaseProps['size'];
+
   return (
     <form onSubmit={fetchAnimes}>
       <Grid container spacing={2}>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
+        <Grid size={gridSize} sx={separationMargin}>
           <CustomTextField
             label="Anime Year"
             id="year"
@@ -43,7 +54,7 @@ function SearchForm({
             fullWidth
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
+        <Grid size={gridSize} sx={separationMargin}>
           <CustomSelect
             value={searchFields.season}
             list={Object.values(ANIME_SEASONS)}
@@ -52,7 +63,7 @@ function SearchForm({
             fullWidth
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
+        <Grid size={gridSize} sx={separationMargin}>
           <CustomSelect
             value={searchFields.status}
             list={Object.values(ANIME_STATUS)}
@@ -61,7 +72,7 @@ function SearchForm({
             fullWidth
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
+        <Grid size={gridSize} sx={separationMargin}>
           <CustomSelect
             value={searchFields.categories}
             list={genres}
@@ -70,7 +81,7 @@ function SearchForm({
             fullWidth
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
+        <Grid size={gridSize} sx={separationMargin}>
           <CustomSelect
             value={searchFields.sort}
             list={Object.values(ANIME_SORT)}
@@ -79,7 +90,7 @@ function SearchForm({
             fullWidth
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
+        <Grid size={gridSize} sx={separationMargin}>
           <CustomSelect
             value={searchFields.subtype}
             list={Object.values(ANIME_SUBTYPE)}
@@ -88,7 +99,7 @@ function SearchForm({
             fullWidth
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
+        <Grid size={gridSize} sx={separationMargin}>
           <CustomSelect
             value={searchFields.ageRating}
             list={Object.values(ANIME_AGE_RATING)}
@@ -98,7 +109,7 @@ function SearchForm({
           />
         </Grid>
       </Grid>
-      <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ marginTop: '8px' }}>
+      <Grid size={gridSize} sx={separationMargin}>
         <Button variant="contained" type="submit">
           Search
         </Button>

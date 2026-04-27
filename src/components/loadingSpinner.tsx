@@ -1,7 +1,7 @@
 import React from 'react';
 import { CircularProgress } from '@mui/material';
 
-const LoadingSpinner = (props) => {
+const LoadingSpinner = () => {
   return (
     <CircularProgress
       size={40}
@@ -11,7 +11,6 @@ const LoadingSpinner = (props) => {
         right: '50%',
         transform: 'translate(-50%, -50%)'
       }}
-      {...props}
     />
   );
 };

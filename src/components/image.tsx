@@ -1,6 +1,14 @@
 import React from 'react';
-import Image, { ImageProps } from 'next/image';
+import { SxProps } from '@mui/material';
+// import Image, { ImageProps } from 'next/image';
 
-const customImage = ({ alt = '', ...props }: ImageProps) => <Image {...props} alt={alt} />;
+interface ImageProps extends React.ComponentPropsWithoutRef<'img'> {
+  alt?: string;
+  sx?: SxProps
+}
+
+const customImage = ({ alt = '', ...props }: ImageProps) => (
+  <img {...props} alt={alt} />
+);
 
 export default customImage;
