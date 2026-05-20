@@ -11,7 +11,7 @@ export const Footer = (): JSX.Element => {
   return (
     <Box component="footer">
       <Typography
-        variant="h6"
+        variant="body2"
         color="text.secondary"
         sx={styles}>
         &#169; Copyright {year}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Grid, GridBaseProps, SelectChangeEvent, SxProps } from '@mui/material';
+import { Box, Button, Grid, GridBaseProps, SelectChangeEvent, SxProps } from '@mui/material';
 import CustomTextField from './TextField';
 import CustomSelect from './Select';
 import { fetch, formatGenres } from '@/helpers/request';
@@ -43,6 +43,9 @@ function SearchForm({
 
   return (
     <form onSubmit={fetchAnimes}>
+      <Box role="region" aria-label="Search filters">
+        <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+          <legend style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>Search filters</legend>
       <Grid container spacing={2}>
         <Grid size={gridSize} sx={separationMargin}>
           <CustomTextField
@@ -117,6 +120,8 @@ function SearchForm({
           Clear filters
         </Button>
       </Grid>
+        </fieldset>
+      </Box>
     </form>
   );
 }

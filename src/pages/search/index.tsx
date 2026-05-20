@@ -1,5 +1,5 @@
 // @ts-nocheck: This file is being ignored temporarily to bypass type errors
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import _get from 'lodash/get';
 import _set from 'lodash/set';
 import _reduce from 'lodash/reduce';
@@ -19,9 +19,10 @@ import {
 } from '@/constants';
 
 import {  SearchStateType, SearchOptionsRequestType, SearchFieldsType } from '@/types';
-import { SelectChangeEvent } from '@mui/material';
+import { Box, SelectChangeEvent } from '@mui/material';
 
 const Search = () => {
+  const resultsRef = useRef<HTMLHeadingElement>(null);
   const [pageState, setPageState] = useState({
     searchFields: {
       seasonYear: new Date().getFullYear().toString(),
@@ -42,8 +43,7 @@ const Search = () => {
     (fieldName: keyof SearchFieldsType): React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> | ((event: SelectChangeEvent<string>) => void) =>
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
       setPageState((existingState: SearchStateType) => {
-        const updatedSearchFieldsState = existingState.searchFields;
-        _set(updatedSearchFieldsState, fieldName, evt.target.value);
+        const updatedSearchFieldsState = { ...existingState.searchFields, [fieldName]: evt.target.value };
 
         return {
           ...existingState,
@@ -116,34 +116,40 @@ const Search = () => {
     }));
   };
 
-  const updateCurrentPage = (evt: React.ChangeEvent<unknown>) => {
-    const input = evt.target as HTMLElement;
-    updateAnimeList(parseInt(input.outerText)).then(() => {
+  const updateCurrentPage = (_evt: React.ChangeEvent<unknown>, page: number) => {
+    updateAnimeList(page).then(() => {
       window.scrollTo(0, 0);
+      resultsRef.current?.focus();
     });
   };
 
   return (
     <Layout>
+      <h1>Search Animes</h1>
       <SearchForm
         searchFields={pageState.searchFields}
         updateSearchField={updateSearchField}
         fetchAnimes={fetchAnimes}
         clearFilters={clearFilters}
       />
-      {pageState.searchingStatus === true ? (
-        <LoadingSpinner />
-      ) : (
-        <AnimeList list={pageState.animeList} />
-      )}
-      {pageState.count ? (
-        <CustomPagination
-          total={pageState.count}
-          itemsPerPage={ITEMS_PER_PAGE}
-          currentPage={pageState.currentPage}
-          updateCurrentPage={updateCurrentPage}
-        />
-      ) : null}
+      <Box role="region" aria-live="polite" aria-label="Search results" aria-atomic="true">
+        <h2 id="results-heading" ref={resultsRef} tabIndex={-1}>
+          {pageState.animeList.length ? `Search Results (${pageState.count})` : 'Search Results'}
+        </h2>
+        {pageState.searchingStatus === true ? (
+          <LoadingSpinner />
+        ) : (
+          <AnimeList list={pageState.animeList} />
+        )}
+        {pageState.count ? (
+          <CustomPagination
+            total={pageState.count}
+            itemsPerPage={ITEMS_PER_PAGE}
+            currentPage={pageState.currentPage}
+            updateCurrentPage={updateCurrentPage}
+          />
+        ) : null}
+      </Box>
     </Layout>
   );
 };

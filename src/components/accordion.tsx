@@ -20,7 +20,7 @@ const styles: Record<string, SxProps> = {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
-    justifyContent: 'space-between'
+    gap: '16px'
   },
   image: {
     width: '25%',
@@ -36,22 +36,22 @@ export default function CustomAccordion({
   synopsis,
   thumbnailUrl
 }: CustomAccordionProps): JSX.Element {
+  const id = React.useId();
+
   return (
-    <div>
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ArrowDropDownIcon />}
-          aria-controls="panel2-content"
-          id="panel2-header">
-          <Typography component="span">{title}</Typography>
-        </AccordionSummary>
-        <AccordionDetails sx={styles.accordion}>
-          {thumbnailUrl && (
-            <Image sx={styles.image} src={thumbnailUrl} alt="some_alt_text" />
-          )}
-          {synopsis && <Typography sx={styles.synopsis}>{synopsis}</Typography>}
-        </AccordionDetails>
-      </Accordion>
-    </div>
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ArrowDropDownIcon />}
+        aria-controls={id + '-content'}
+        id={id + '-header'}>
+        <Typography component="span">{title}</Typography>
+      </AccordionSummary>
+      <AccordionDetails sx={styles.accordion}>
+        {thumbnailUrl && (
+          <Image sx={styles.image} src={thumbnailUrl} alt={title} />
+        )}
+        {synopsis && <Typography sx={styles.synopsis}>{synopsis}</Typography>}
+      </AccordionDetails>
+    </Accordion>
   );
 }

@@ -9,10 +9,25 @@ type LayoutProps = {
 
 export const Layout = ({ children }: LayoutProps) => {
   return (
-    <Container maxWidth="lg">
-      <Header />
-      <Container component="main">{children}</Container>
-      <Footer />
-    </Container>
+    <>
+      <a
+        href="#main-content"
+        style={{
+          position: 'absolute',
+          left: '-9999px',
+          top: 0,
+          zIndex: 999
+        }}
+        tabIndex={0}>
+        Skip to content
+      </a>
+      <Container maxWidth="lg">
+        <Header />
+        <Container component="main" id="main-content" tabIndex={-1}>
+          {children}
+        </Container>
+        <Footer />
+      </Container>
+    </>
   );
 };

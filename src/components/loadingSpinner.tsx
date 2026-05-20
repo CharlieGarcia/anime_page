@@ -4,6 +4,7 @@ import { CircularProgress } from '@mui/material';
 const LoadingSpinner = () => {
   return (
     <CircularProgress
+      aria-label="Loading content"
       size={40}
       sx={{
         position: 'absolute',
