@@ -11,6 +11,7 @@ const ANIME_LIMIT = 12;
 const Home = ({ data, error }: { data: Anime[]; error: string | null }) => {
   return (
     <Layout>
+      <h1>Anime Discovery</h1>
       <p>
         This is an anime page using the{' '}
         <a

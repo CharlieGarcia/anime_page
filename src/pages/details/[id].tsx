@@ -1,8 +1,15 @@
 // @ts-nocheck: This file is being ignored temporarily to bypass type errors
-import React, { useState, useEffect, useRef, useCallback, CSSProperties } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  CSSProperties
+} from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import _get from 'lodash/get';
 import _kebabCase from 'lodash/kebabCase';
+import Link from 'next/link';
 import Image from '@/components/image';
 import Accordion from '@/components/accordion';
 import { Layout } from '@/components/layout';
@@ -72,22 +79,30 @@ function Detail({ info, categories, error }: DetailProps) {
   const [data, setData] = useState({ episodes: [], totalEpisodes: 0 });
   const sentinelRef = useRef(null);
 
-  const fetchEpisodes = useCallback(async (id: string, offset: number = 0): Promise<{ episodes: Episode[], totalEpisodes: number }> => {
-    const episodesResponse = await fetch(
-      `/anime/${id}/episodes?page[limit]=${EPISODES_PER_PAGE}&page[offset]=${offset}`
-    );
+  const fetchEpisodes = useCallback(
+    async (
+      id: string,
+      offset: number = 0
+    ): Promise<{ episodes: Episode[]; totalEpisodes: number }> => {
+      const episodesResponse = await fetch(
+        `/anime/${id}/episodes?page[limit]=${EPISODES_PER_PAGE}&page[offset]=${offset}`
+      );
 
-    return {
-      episodes: _get(episodesResponse, 'data.data', []).map((episode): Episode => ({
-        id: episode.id,
-        title: episode.attributes.canonicalTitle || 'Not Aired Yet',
-        number: episode.attributes.number || '',
-        thumbnailUrl: episode.attributes.thumbnail?.original || '',
-        synopsis: episode.attributes.synopsis || ''
-      })),
-      totalEpisodes: _get(episodesResponse, 'data.meta.count', 0)
-    };
-  }, []);
+      return {
+        episodes: _get(episodesResponse, 'data.data', []).map(
+          (episode): Episode => ({
+            id: episode.id,
+            title: episode.attributes.canonicalTitle || 'Not Aired Yet',
+            number: episode.attributes.number || '',
+            thumbnailUrl: episode.attributes.thumbnail?.original || '',
+            synopsis: episode.attributes.synopsis || ''
+          })
+        ),
+        totalEpisodes: _get(episodesResponse, 'data.meta.count', 0)
+      };
+    },
+    []
+  );
 
   const handleIntersection = useCallback(
     (entries) => {
@@ -147,8 +162,10 @@ function Detail({ info, categories, error }: DetailProps) {
 
   return (
     <Layout>
-      <Typography variant="h5" color="text.secondary">
+      <Typography variant="h1" component="h1" color="text.secondary">
         {info.attributes?.titles?.en_jp}
+      </Typography>
+      <Typography variant="p" component="p" color="text.secondary">
         {` (${data.totalEpisodes} episodes)`}
       </Typography>
       <Box>
@@ -156,7 +173,7 @@ function Detail({ info, categories, error }: DetailProps) {
           <Image
             style={{ width: '100%', height: 'auto' }}
             src={info.attributes.coverImage.large}
-            alt="some_alt_text"
+            alt={info.attributes?.titles?.en_jp || 'Anime cover'}
           />
         )}
       </Box>
@@ -172,6 +189,7 @@ function Detail({ info, categories, error }: DetailProps) {
             variant="outlined"
             style={styles.tags}
             key={category.id}
+            component={Link}
             href={category.slug}>
             {category.title}
           </Button>
@@ -179,10 +197,11 @@ function Detail({ info, categories, error }: DetailProps) {
       </Box>
       <Box style={{ marginTop: '15px' }}>
         <Typography
-          variant="h6"
+          variant="h2"
+          component="h2"
           color="text.secondary"
           sx={{ marginBottom: '15px' }}>
-          Episodes:
+          Episodes
         </Typography>
         <Box style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
           {data.episodes?.map((episode) => (

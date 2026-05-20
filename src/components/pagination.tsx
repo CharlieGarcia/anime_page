@@ -24,6 +24,7 @@ const CustomPagination = ({
       hideNextButton={currentPage === pageCount}
       page={currentPage}
       onChange={updateCurrentPage}
+      aria-label="Search results pagination"
     />
   );
 };

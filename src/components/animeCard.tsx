@@ -40,7 +40,7 @@ const AnimeCard = ({ id, attributes }: AnimeCardProps): JSX.Element => {
               component="img"
               height={402}
               image={posterImageUrl}
-              alt=""
+              alt={titleEnglish}
             />
           )}
           <CardContent>

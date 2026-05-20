@@ -85,14 +85,19 @@ function Related() {
     };
   }, [handleIntersection]);
 
+  const title = slug ? String(slug).replace(/-/g, ' ') : '';
+
   return (
     <Layout>
       <Box>
-        Results: {data.totalAnimes}
-        {error ? <Typography>{error}</Typography> : null}
-        {data.animes?.length ? <AnimeList list={data.animes} /> : null}
+        <h1>Related Animes: {title}</h1>
+        <Box role="region" aria-live="polite" aria-label="Related animes">
+          <h2>Results: {data.totalAnimes}</h2>
+          {error ? <Typography>{error}</Typography> : null}
+          {data.animes?.length ? <AnimeList list={data.animes} /> : null}
+        </Box>
         <div ref={sentinelRef} style={{ height: '20px' }} />
-        {isLoadingRelatedAnimes && <Typography>Loading related animes...</Typography>}
+        {isLoadingRelatedAnimes && <Typography aria-live="polite">Loading related animes...</Typography>}
         {data.animes.length === 0 && !isLoadingRelatedAnimes && (
           <Typography>No related animes found</Typography>
         )}
