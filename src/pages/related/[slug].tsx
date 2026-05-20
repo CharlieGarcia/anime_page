@@ -1,4 +1,3 @@
-// @ts-nocheck: This file is being ignored temporarily to bypass type errors
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Box, Typography } from '@mui/material';
 import _get from 'lodash/get';
@@ -22,7 +21,7 @@ function Related() {
   const [isLoadingRelatedAnimes, setIsLoadingRelatedAnimes] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [data, setData] = useState<relatedStateType>({ animes: [], totalAnimes: 0 });
-  const sentinelRef = useRef<React.ReactComponentElement|null>(null);
+  const sentinelRef = useRef<HTMLDivElement|null>(null);
 
 
   const fetchRelatedAnimes = useCallback(async (page = 0) => {
@@ -38,7 +37,7 @@ function Related() {
   }, [router.isReady, slug]);
 
   const handleIntersection = useCallback(
-    (entries) => {
+    (entries: IntersectionObserverEntry[]) => {
       const [entry] = entries;
       if (
         entry.isIntersecting &&
@@ -62,7 +61,9 @@ function Related() {
         }));
         setError('');
       } catch (err) {
-        setError(err.message);
+        if (err instanceof Error) {
+          setError(err.message);
+        }
         console.error(err);
       } finally {
         setIsLoadingRelatedAnimes(false);
@@ -90,7 +91,7 @@ function Related() {
     };
   }, [handleIntersection]);
 
-  const title = slug ? String(slug).replace(/-/g, ' ') : '';
+  const title: string = slug ? String(slug).replace(/-/g, ' ') : '';
 
   return (
     <Layout>
