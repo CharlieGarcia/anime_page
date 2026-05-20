@@ -6,23 +6,29 @@ import { useRouter } from 'next/router';
 import { Layout } from '@/components/layout';
 import { fetch } from '@/helpers/request';
 import AnimeList from '@/components/animeList';
+import { Anime } from '@/types';
 
-const ANIMES_PER_PAGE = 13;
+const ANIMES_PER_PAGE: number = 13;
+
+type relatedStateType = {
+  animes: Anime[],
+  totalAnimes: number
+}
 
 function Related() {
   const router = useRouter();
   const { slug } = router.query;
-  const [error, setError] = useState('');
-  const [isLoadingRelatedAnimes, setIsLoadingRelatedAnimes] = useState(false);
-  const [offset, setOffset] = useState(0);
-  const [data, setData] = useState({ animes: [], totalAnimes: 0 });
-  const sentinelRef = useRef(null);
+  const [error, setError] = useState<string>('');
+  const [isLoadingRelatedAnimes, setIsLoadingRelatedAnimes] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [data, setData] = useState<relatedStateType>({ animes: [], totalAnimes: 0 });
+  const sentinelRef = useRef<React.ReactComponentElement|null>(null);
 
 
-  const fetchRelatedAnimes = useCallback(async (offset = 0) => {
+  const fetchRelatedAnimes = useCallback(async (page = 0) => {
     if (!router.isReady) return { animes: [], totalAnimes: 0 };
     const animesResponse = await fetch(
-      `/anime?filter[categories]=${slug}&page[limit]=${ANIMES_PER_PAGE}&page[offset]=${offset}`
+      `/anime?filter[categories]=${slug}&page[limit]=${ANIMES_PER_PAGE}&page[offset]=${page * ANIMES_PER_PAGE}`
     );
 
     return {
@@ -39,8 +45,7 @@ function Related() {
         !isLoadingRelatedAnimes &&
         data.animes.length < data.totalAnimes
       ) {
-        setOffset((prev) => prev + ANIMES_PER_PAGE);
-        console.log('loading more animes');
+        setPage((prev) => prev + 1);
       }
     },
     [isLoadingRelatedAnimes, data.animes.length, data.totalAnimes]
@@ -50,7 +55,7 @@ function Related() {
     const loadMoreAnimes = async () => {
       try {
         setIsLoadingRelatedAnimes(true);
-        const data = await fetchRelatedAnimes(offset);
+        const data = await fetchRelatedAnimes(page);
         setData((prev) => ({
           animes: [...prev.animes, ...data.animes],
           totalAnimes: data.totalAnimes
@@ -65,7 +70,7 @@ function Related() {
     };
 
     loadMoreAnimes();
-  }, [router.isReady, offset, fetchRelatedAnimes]);
+  }, [router.isReady, page, fetchRelatedAnimes]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(handleIntersection, {
