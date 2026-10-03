@@ -113,13 +113,14 @@ function Detail({ info, categories, error }: DetailProps) {
         data.episodes.length < data.totalEpisodes
       ) {
         setOffset((prev) => prev + EPISODES_PER_PAGE);
-        console.log('loading more episodes');
       }
     },
     [isLoadingEpisodes, data.episodes.length, data.totalEpisodes]
   );
 
   useEffect(() => {
+    if (!info?.id) return;
+
     const loadMoreEpisodes = async () => {
       try {
         setIsLoadingEpisodes(true);
@@ -136,7 +137,7 @@ function Detail({ info, categories, error }: DetailProps) {
     };
 
     loadMoreEpisodes();
-  }, [offset, info.id, fetchEpisodes]);
+  }, [offset, info?.id, fetchEpisodes]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(handleIntersection, {
@@ -242,10 +243,17 @@ export async function getServerSideProps({ params }) {
   } catch (err) {
     return {
       props: {
-        error: err
+        info: null,
+        categories: [],
+        error: err instanceof Error ? err.message : String(err)
       }
     };
   }
 }
 
-export default Detail;
+// Remount on id change so episode pagination state doesn't leak between animes
+function DetailPage(props: DetailProps) {
+  return <Detail key={props.info?.id} {...props} />;
+}
+
+export default DetailPage;

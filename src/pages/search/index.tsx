@@ -53,7 +53,7 @@ const Search = () => {
     };
 
   const updateAnimeList = (currentPage: number) => {
-    const offset = currentPage > 1 ? currentPage * ITEMS_PER_PAGE : currentPage;
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
     const searchParams =
       _reduce(

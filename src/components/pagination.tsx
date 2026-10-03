@@ -14,7 +14,7 @@ const CustomPagination = ({
   currentPage = 1,
   updateCurrentPage
 }: CustomPaginationProps) => {
-  const pageCount = Math.floor(total / itemsPerPage);
+  const pageCount = Math.ceil(total / itemsPerPage);
 
   return (
     <Pagination

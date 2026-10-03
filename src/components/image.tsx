@@ -1,5 +1,5 @@
 import React from 'react';
-import { SxProps } from '@mui/material';
+import { Box, SxProps } from '@mui/material';
 // import Image, { ImageProps } from 'next/image';
 
 interface ImageProps extends React.ComponentPropsWithoutRef<'img'> {
@@ -8,7 +8,7 @@ interface ImageProps extends React.ComponentPropsWithoutRef<'img'> {
 }
 
 const customImage = ({ alt = '', ...props }: ImageProps) => (
-  <img {...props} alt={alt} />
+  <Box component="img" {...props} alt={alt} />
 );
 
 export default customImage;

@@ -66,7 +66,7 @@ export const ThemeToggle = () => {
 
   return (
     <FormControlLabel
-      control={<MaterialUISwitch sx={{ m: 1 }} defaultChecked onChange={colorMode.toggleColorMode} />}
+      control={<MaterialUISwitch sx={{ m: 1 }} checked={theme.palette.mode === 'dark'} onChange={colorMode.toggleColorMode} />}
       label={`${capitalize(theme.palette.mode)} Mode`}
     />
   );

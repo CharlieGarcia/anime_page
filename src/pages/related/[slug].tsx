@@ -24,10 +24,10 @@ function Related() {
   const sentinelRef = useRef<HTMLDivElement|null>(null);
 
 
-  const fetchRelatedAnimes = useCallback(async (page = 0) => {
+  const fetchRelatedAnimes = useCallback(async (page = 1) => {
     if (!router.isReady) return { animes: [], totalAnimes: 0 };
     const animesResponse = await fetch(
-      `/anime?filter[categories]=${slug}&page[limit]=${ANIMES_PER_PAGE}&page[offset]=${page * ANIMES_PER_PAGE}`
+      `/anime?filter[categories]=${slug}&page[limit]=${ANIMES_PER_PAGE}&page[offset]=${(page - 1) * ANIMES_PER_PAGE}`
     );
 
     return {
@@ -112,4 +112,10 @@ function Related() {
   );
 }
 
-export default Related;
+// Remount on slug change so pagination state doesn't leak between categories
+function RelatedPage() {
+  const { query } = useRouter();
+  return <Related key={String(query.slug)} />;
+}
+
+export default RelatedPage;
