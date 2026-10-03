@@ -42,7 +42,7 @@
         "./src/types"
       ]
     },
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "ignoreDeprecations": "6.0"
   },
   "include": [
