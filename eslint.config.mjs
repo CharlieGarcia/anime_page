@@ -6,16 +6,18 @@ import prettier from 'eslint-config-prettier/flat';
 export default defineConfig([
   // Enforce that all ts-nocheck comments have descriptions, to avoid accidentally leaving them in without explanation.
   // This is temporary until I finish migrating the codebase to TypeScript and can remove all ts-nocheck comments.
-  {
-    '@typescript-eslint/ban-ts-comment': [
-      'error',
-      {
-        'ts-nocheck': 'allow-with-description',
-      }
-    ]
-  },
   ...nextVitals,
   ...nextTs,
+  {
+    rules: {
+      '@typescript-eslint/ban-ts-comment': [
+        'error',
+        {
+          'ts-nocheck': 'allow-with-description',
+        }
+      ]
+    }
+  },
   prettier,
   globalIgnores([
     // Default ignores of eslint-config-next:

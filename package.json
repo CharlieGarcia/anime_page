@@ -3,39 +3,40 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@babel/preset-env": "^7.29.0",
-    "@babel/preset-typescript": "^7.28.5",
+    "@babel/preset-env": "^7.29.7",
+    "@babel/preset-typescript": "^7.29.7",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@fontsource/roboto": "^5.2.10",
-    "@mui/icons-material": "^7.3.8",
-    "@mui/material": "^7.3.8",
-    "axios": "^1.13.6",
-    "caniuse-lite": "^1.0.30001733",
+    "@fontsource/roboto": "^5.3.0",
+    "@mui/icons-material": "^9.4.0",
+    "@mui/material": "^9.4.0",
+    "axios": "^1.20.0",
+    "caniuse-lite": "^1.0.30001814",
     "eslint-import-resolver-alias": "^1.1.2",
-    "lodash": "^4.17.23",
-    "next": "16.1.6",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "lodash": "^4.18.1",
+    "next": "16.3.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
   },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
-    "@babel/eslint-parser": "^7.28.6",
-    "@babel/preset-react": "^7.28.5",
-    "@types/lodash": "^4.17.24",
-    "@types/node": "25.3.3",
-    "eslint": "^10.0.3",
-    "eslint-config-next": "^16.1.6",
+    "@babel/core": "^7.29.7",
+    "@babel/eslint-parser": "^7.29.9",
+    "@babel/preset-react": "^7.29.7",
+    "@types/lodash": "^4.17.25",
+    "@types/node": "25.9.9",
+    "eslint": "^10.12.0",
+    "eslint-config-next": "^16.3.8",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
-    "lint-staged": "^16.3.2",
-    "prettier": "3.6.2"
+    "lint-staged": "^17.6.0",
+    "prettier": "3.9.9",
+    "typescript": "~6.0.3"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"

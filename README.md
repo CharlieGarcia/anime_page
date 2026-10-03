@@ -26,7 +26,7 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 1. Install dependencies:
 
    ```bash
-   npm install
+   bun install
    ```
 
 2. Create a `.env.local` file in the project root and set the Kitsu API base URL:
@@ -41,12 +41,12 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 
 | Command        | Description              |
 | -------------- | ------------------------ |
-| `npm run dev`  | Start dev server (Next.js) |
-| `npm run build` | Production build         |
-| `npm run start` | Run production server    |
-| `npm run lint` | Run ESLint               |
+| `bun run dev`  | Start dev server (Next.js) |
+| `bun run build`| Production build         |
+| `bun run start`| Run production server    |
+| `bun run lint` | Run ESLint               |
 
-Open [http://localhost:3000](http://localhost:3000) when using `npm run dev`.
+Open [http://localhost:3000](http://localhost:3000) when using `bun run dev`.
 
 ## Project layout
 
