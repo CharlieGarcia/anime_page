@@ -27,20 +27,6 @@ export type SearchFieldsType = {
   ageRating: string;
 };
 
-export type SearchStateType = {
-  searchFields: SearchFieldsType;
-  searchingStatus: boolean;
-  currentPage: number;
-  animeList: Anime[];
-  count: number;
-};
-
-export type SearchOptionsRequestType = {
-  'page[offset]': number;
-  'page[limit]': number;
-  [key: string]: string | number;
-};
-
 export type Anime = {
   id: string;
   type: string;
@@ -134,4 +120,24 @@ type Relationship = {
 type RelationshipLinks = {
   self: string;
   related: string;
+}
+
+export type Category = {
+  id: string;
+  type: string;
+  attributes: {
+    title: string;
+    slug: string;
+  };
+}
+
+export type Episode = {
+  id: string;
+  type: string;
+  attributes: {
+    canonicalTitle: string | null;
+    number: number | null;
+    synopsis: string | null;
+    thumbnail: { original?: string } | null;
+  };
 }

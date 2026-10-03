@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Box, Button, Grid, GridBaseProps, SelectChangeEvent, SxProps } from '@mui/material';
 import CustomTextField from './TextField';
 import CustomSelect from './Select';
-import { fetch, formatGenres } from '@/helpers/request';
+import { genresQuery } from '@/helpers/queries';
 import {
   ANIME_SEASONS,
   ANIME_STATUS,
@@ -25,18 +26,7 @@ function SearchForm({
   fetchAnimes,
   updateSearchField
 }: SearchFormProps) {
-  const [genres, setGenres] = useState<string[]>([]);
-
-  useEffect(() => {
-    const fetchGenres = async () => {
-      const resp = await fetch('/genres');
-      const genres = formatGenres(resp.data.data);
-
-      setGenres(genres);
-    };
-
-    fetchGenres();
-  }, []);
+  const { data: genres = [] } = useQuery(genresQuery());
 
   const separationMargin = { marginTop: '8px' } as SxProps;
   const gridSize = { xs: 12, sm: 6, md: 3 } as GridBaseProps['size'];
