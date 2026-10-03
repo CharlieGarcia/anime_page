@@ -1,14 +1,12 @@
-// @ts-nocheck: This file is being ignored temporarily to bypass type errors
 import React, { useState, useRef } from 'react';
-import _get from 'lodash/get';
-import _set from 'lodash/set';
-import _reduce from 'lodash/reduce';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Box, SelectChangeEvent } from '@mui/material';
 import AnimeList from '@/components/animeList';
 import CustomPagination from '@/components/pagination';
 import LoadingSpinner from '@/components/loadingSpinner';
 import SearchForm from '@/components/search/SearchForm';
 import { Layout } from '@/components/layout';
-import { fetch } from '@/helpers/request';
+import { SearchRequest, searchAnimeQuery } from '@/helpers/queries';
 import {
   ANIME_SEASONS,
   ANIME_STATUS,
@@ -17,135 +15,80 @@ import {
   ANIME_AGE_RATING,
   ITEMS_PER_PAGE
 } from '@/constants';
+import { SearchFieldsType } from '@/types';
 
-import {  SearchStateType, SearchOptionsRequestType, SearchFieldsType } from '@/types';
-import { Box, SelectChangeEvent } from '@mui/material';
+const defaultSearchFields = (status: string): SearchFieldsType => ({
+  seasonYear: new Date().getFullYear().toString(),
+  sort: ANIME_SORT.popularityRank,
+  status,
+  season: ANIME_SEASONS.any,
+  categories: '',
+  subtype: ANIME_SUBTYPE.any,
+  ageRating: ANIME_AGE_RATING.any
+});
 
 const Search = () => {
+  const queryClient = useQueryClient();
   const resultsRef = useRef<HTMLHeadingElement>(null);
-  const [pageState, setPageState] = useState({
-    searchFields: {
-      seasonYear: new Date().getFullYear().toString(),
-      sort: ANIME_SORT.popularityRank,
-      status: ANIME_STATUS.current,
-      season: ANIME_SEASONS.any,
-      categories: '',
-      subtype: ANIME_SUBTYPE.any,
-      ageRating: ANIME_AGE_RATING.any
-    },
-    searchingStatus: false,
-    currentPage: 1,
-    animeList: [],
-    count: 0
-  } as SearchStateType);
+  const [searchFields, setSearchFields] = useState<SearchFieldsType>(() =>
+    defaultSearchFields(ANIME_STATUS.current)
+  );
+  // The search that was last submitted; null until the form is submitted
+  const [search, setSearch] = useState<SearchRequest | null>(null);
+  const { data, error, isFetching } = useQuery(searchAnimeQuery(search));
+  const animeList = data?.animeList ?? [];
+  const count = data?.count ?? 0;
 
   const updateSearchField =
-    (fieldName: keyof SearchFieldsType): React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> | ((event: SelectChangeEvent<string>) => void) =>
+    (fieldName: keyof SearchFieldsType) =>
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
-      setPageState((existingState: SearchStateType) => {
-        const updatedSearchFieldsState = { ...existingState.searchFields, [fieldName]: evt.target.value };
-
-        return {
-          ...existingState,
-          searchFields: updatedSearchFieldsState
-        };
-      });
+      setSearchFields((existingFields) => ({
+        ...existingFields,
+        [fieldName]: evt.target.value
+      }));
     };
 
-  const updateAnimeList = (currentPage: number) => {
-    const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-
-    const searchParams =
-      _reduce(
-        pageState.searchFields,
-        (result, value, key) => {
-          if (value) {
-            if (key !== 'sort') {
-              _set(result, `filter[${key}]`, value);
-            } else {
-              _set(result, `sort`, value);
-            }
-          }
-
-          return result;
-        },
-        {}
-      ) || {};
-    const options = {
-      'page[offset]': offset,
-      'page[limit]': ITEMS_PER_PAGE,
-      ...searchParams
-    } as SearchOptionsRequestType;
-
-    return fetch('/anime', options).then((resp) => {
-      setPageState((existingState) => ({
-        ...existingState,
-        animeList: _get(resp, 'data.data') || [],
-        count: _get(resp, 'data.meta.count') || 0,
-        currentPage,
-        searchingStatus: false
-      }));
-    });
-  };
-
   const fetchAnimes = (evt: React.FormEvent<HTMLFormElement>) => {
-    setPageState((existingState) => ({
-      ...existingState,
-      searchingStatus: true
-    }));
     evt.preventDefault();
-    updateAnimeList(pageState.currentPage);
+    setSearch({ fields: searchFields, page: 1 });
   };
 
   const clearFilters = () => {
-    setPageState((existingState) => ({
-      ...existingState,
-      searchFields: {
-        seasonYear: new Date().getFullYear().toString(),
-        sort: ANIME_SORT.popularityRank,
-        status: ANIME_STATUS.any,
-        season: ANIME_SEASONS.any,
-        categories: '',
-        subtype: ANIME_SUBTYPE.any,
-        ageRating: ANIME_AGE_RATING.any
-      },
-      currentPage: 1,
-      searchingStatus: false,
-      count: 0,
-      animeList: []
-    }));
+    setSearchFields(defaultSearchFields(ANIME_STATUS.any));
+    setSearch(null);
   };
 
-  const updateCurrentPage = (_evt: React.ChangeEvent<unknown>, page: number) => {
-    updateAnimeList(page).then(() => {
-      window.scrollTo(0, 0);
-      resultsRef.current?.focus();
-    });
+  const updateCurrentPage = async (_evt: React.ChangeEvent<unknown>, page: number) => {
+    if (!search) return;
+
+    const nextSearch = { ...search, page };
+    // Load the page before switching to it so the current results stay visible meanwhile
+    await queryClient.fetchQuery(searchAnimeQuery(nextSearch));
+    setSearch(nextSearch);
+    window.scrollTo(0, 0);
+    resultsRef.current?.focus();
   };
 
   return (
     <Layout>
       <h1>Search Animes</h1>
       <SearchForm
-        searchFields={pageState.searchFields}
+        searchFields={searchFields}
         updateSearchField={updateSearchField}
         fetchAnimes={fetchAnimes}
         clearFilters={clearFilters}
       />
       <Box role="region" aria-live="polite" aria-label="Search results" aria-atomic="true">
         <h2 id="results-heading" ref={resultsRef} tabIndex={-1}>
-          {pageState.animeList.length ? `Search Results (${pageState.count})` : 'Search Results'}
+          {animeList.length ? `Search Results (${count})` : 'Search Results'}
         </h2>
-        {pageState.searchingStatus === true ? (
-          <LoadingSpinner />
-        ) : (
-          <AnimeList list={pageState.animeList} />
-        )}
-        {pageState.count ? (
+        {error ? error.message : null}
+        {isFetching ? <LoadingSpinner /> : <AnimeList list={animeList} />}
+        {count ? (
           <CustomPagination
-            total={pageState.count}
+            total={count}
             itemsPerPage={ITEMS_PER_PAGE}
-            currentPage={pageState.currentPage}
+            currentPage={search?.page}
             updateCurrentPage={updateCurrentPage}
           />
         ) : null}

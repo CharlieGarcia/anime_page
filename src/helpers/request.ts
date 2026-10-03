@@ -4,8 +4,8 @@ import { Genres } from '../types';
 
 const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
-export function fetch(endPoint: string, params: Record<string, string | number> = {}) {
-  return axios.get(`${API_ENDPOINT}${endPoint}`, {
+export function fetch<T>(endPoint: string, params: Record<string, string | number> = {}) {
+  return axios.get<T>(`${API_ENDPOINT}${endPoint}`, {
     headers: {
       Accept: 'application/vnd.api+json'
     },

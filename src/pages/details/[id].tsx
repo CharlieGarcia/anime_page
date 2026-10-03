@@ -1,21 +1,19 @@
-// @ts-nocheck: This file is being ignored temporarily to bypass type errors
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  CSSProperties
-} from 'react';
+import React, { CSSProperties } from 'react';
+import { GetServerSidePropsContext } from 'next';
+import { dehydrate, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { Box, Button, Typography } from '@mui/material';
-import _get from 'lodash/get';
-import _kebabCase from 'lodash/kebabCase';
 import Link from 'next/link';
 import Image from '@/components/image';
 import Accordion from '@/components/accordion';
 import { Layout } from '@/components/layout';
-import { fetch } from '@/helpers/request';
-
-const EPISODES_PER_PAGE: number = 13;
+import LoadingSpinner from '@/components/loadingSpinner';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { makeQueryClient } from '@/helpers/queryClient';
+import {
+  animeCategoriesQuery,
+  animeDetailsQuery,
+  animeEpisodesQuery
+} from '@/helpers/queries';
 
 const styles: { tags: CSSProperties } = {
   tags: {
@@ -25,140 +23,39 @@ const styles: { tags: CSSProperties } = {
   }
 };
 
-async function fetchAnimeInfo(id: string) {
-  const response = await fetch(`/anime/${id}`);
-  return _get(response, 'data.data', {});
-}
-
-interface CategoryTags {
-  slug: string;
+type DetailProps = {
   id: string;
-  title: string;
-}
+};
 
-async function fetchCategories(id: string): Promise<CategoryTags[]> {
-  const categoriesResponse = await fetch(`/anime/${id}/categories`);
-
-  return _get(categoriesResponse, 'data.data', []).map((category) => ({
-    slug: `/related/${_kebabCase(category.attributes.title)}`,
-    id: category.id,
-    title: category.attributes.title
-  }));
-}
-
-interface AnimeInfoResponse {
-  attributes: {
-    titles: {
-      en_jp: string;
-    };
-    coverImage: {
-      large: string;
-    };
-    synopsis: string;
-  };
-  id: string;
-}
-
-interface DetailProps {
-  info: AnimeInfoResponse;
-  categories: CategoryTags[];
-  error: string | null;
-}
-
-interface Episode {
-  id: string;
-  title: string;
-  number: string;
-  thumbnailUrl: string;
-  synopsis: string;
-}
-
-function Detail({ info, categories, error }: DetailProps) {
-  const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(false);
-  const [offset, setOffset] = useState(0);
-  const [data, setData] = useState({ episodes: [], totalEpisodes: 0 });
-  const sentinelRef = useRef(null);
-
-  const fetchEpisodes = useCallback(
-    async (
-      id: string,
-      offset: number = 0
-    ): Promise<{ episodes: Episode[]; totalEpisodes: number }> => {
-      const episodesResponse = await fetch(
-        `/anime/${id}/episodes?page[limit]=${EPISODES_PER_PAGE}&page[offset]=${offset}`
-      );
-
-      return {
-        episodes: _get(episodesResponse, 'data.data', []).map(
-          (episode): Episode => ({
-            id: episode.id,
-            title: episode.attributes.canonicalTitle || 'Not Aired Yet',
-            number: episode.attributes.number || '',
-            thumbnailUrl: episode.attributes.thumbnail?.original || '',
-            synopsis: episode.attributes.synopsis || ''
-          })
-        ),
-        totalEpisodes: _get(episodesResponse, 'data.meta.count', 0)
-      };
-    },
-    []
+function Detail({ id }: DetailProps) {
+  const { data: info, error } = useQuery(animeDetailsQuery(id));
+  const { data: categories = [] } = useQuery(animeCategoriesQuery(id));
+  const {
+    data: episodesData,
+    isPending: isPendingEpisodes,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage
+  } = useInfiniteQuery(animeEpisodesQuery(id));
+  const sentinelRef = useInfiniteScroll<HTMLDivElement>(
+    fetchNextPage,
+    hasNextPage && !isFetchingNextPage
   );
 
-  const handleIntersection = useCallback(
-    (entries) => {
-      const [entry] = entries;
-      if (
-        entry.isIntersecting &&
-        !isLoadingEpisodes &&
-        data.episodes.length < data.totalEpisodes
-      ) {
-        setOffset((prev) => prev + EPISODES_PER_PAGE);
-      }
-    },
-    [isLoadingEpisodes, data.episodes.length, data.totalEpisodes]
-  );
-
-  useEffect(() => {
-    if (!info?.id) return;
-
-    const loadMoreEpisodes = async () => {
-      try {
-        setIsLoadingEpisodes(true);
-        const data = await fetchEpisodes(info.id, offset);
-        setData((prev) => ({
-          episodes: [...prev.episodes, ...data.episodes],
-          totalEpisodes: data.totalEpisodes
-        }));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoadingEpisodes(false);
-      }
-    };
-
-    loadMoreEpisodes();
-  }, [offset, info?.id, fetchEpisodes]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(handleIntersection, {
-      root: null,
-      threshold: 0.1
-    });
-
-    const currentSentinel = sentinelRef.current;
-    if (currentSentinel) {
-      observer.observe(currentSentinel);
-    }
-
-    return () => {
-      if (currentSentinel) {
-        observer.unobserve(currentSentinel);
-      }
-    };
-  }, [handleIntersection]);
+  const episodes = episodesData?.pages.flatMap((page) => page.items) ?? [];
+  const totalEpisodes = episodesData?.pages[0]?.total ?? 0;
+  const isLoadingEpisodes = isPendingEpisodes || isFetchingNextPage;
 
   if (error) {
-    return <Layout>{error}</Layout>;
+    return <Layout>{error.message}</Layout>;
+  }
+
+  if (!info) {
+    return (
+      <Layout>
+        <LoadingSpinner />
+      </Layout>
+    );
   }
 
   return (
@@ -166,11 +63,11 @@ function Detail({ info, categories, error }: DetailProps) {
       <Typography variant="h1" component="h1" color="text.secondary">
         {info.attributes?.titles?.en_jp}
       </Typography>
-      <Typography variant="p" component="p" color="text.secondary">
-        {` (${data.totalEpisodes} episodes)`}
+      <Typography variant="body1" component="p" color="text.secondary">
+        {` (${totalEpisodes} episodes)`}
       </Typography>
       <Box>
-        {info?.attributes?.coverImage?.large && (
+        {info.attributes?.coverImage?.large && (
           <Image
             style={{ width: '100%', height: 'auto' }}
             src={info.attributes.coverImage.large}
@@ -205,7 +102,7 @@ function Detail({ info, categories, error }: DetailProps) {
           Episodes
         </Typography>
         <Box style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-          {data.episodes?.map((episode) => (
+          {episodes.map((episode) => (
             <Accordion
               key={episode.id}
               title={`${episode.number} - ${episode.title}`}
@@ -215,7 +112,7 @@ function Detail({ info, categories, error }: DetailProps) {
           ))}
           <div ref={sentinelRef} style={{ height: '20px' }} />
           {isLoadingEpisodes && <Typography>Loading episodes...</Typography>}
-          {data.episodes.length === 0 && !isLoadingEpisodes && (
+          {episodes.length === 0 && !isLoadingEpisodes && (
             <Typography>No episodes found</Typography>
           )}
         </Box>
@@ -224,36 +121,24 @@ function Detail({ info, categories, error }: DetailProps) {
   );
 }
 
-export async function getServerSideProps({ params }) {
-  const { id } = params;
-  let categories = [];
-  let info = {};
+export async function getServerSideProps({
+  params
+}: GetServerSidePropsContext<{ id: string }>) {
+  const id = params?.id ?? '';
+  const queryClient = makeQueryClient();
 
-  try {
-    info = await fetchAnimeInfo(id);
-    categories = await fetchCategories(id);
+  await Promise.all([
+    queryClient.prefetchQuery(animeDetailsQuery(id)),
+    queryClient.prefetchQuery(animeCategoriesQuery(id)),
+    queryClient.prefetchInfiniteQuery(animeEpisodesQuery(id))
+  ]);
 
-    return {
-      props: {
-        info,
-        categories,
-        error: null
-      }
-    };
-  } catch (err) {
-    return {
-      props: {
-        info: null,
-        categories: [],
-        error: err instanceof Error ? err.message : String(err)
-      }
-    };
-  }
+  return {
+    props: {
+      id,
+      dehydratedState: dehydrate(queryClient)
+    }
+  };
 }
 
-// Remount on id change so episode pagination state doesn't leak between animes
-function DetailPage(props: DetailProps) {
-  return <Detail key={props.info?.id} {...props} />;
-}
-
-export default DetailPage;
+export default Detail;

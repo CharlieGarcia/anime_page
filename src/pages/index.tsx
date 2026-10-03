@@ -1,14 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
+import { dehydrate, useQuery } from '@tanstack/react-query';
 import { Layout } from '@/components/layout';
 import AnimeList from '@/components/animeList';
-import { fetch } from '@/helpers/request';
-import _get from 'lodash/get';
-import { Anime } from '@/types';
+import LoadingSpinner from '@/components/loadingSpinner';
+import { makeQueryClient } from '@/helpers/queryClient';
+import { TRENDING_LIMIT, trendingAnimeQuery } from '@/helpers/queries';
 
-const ANIME_LIMIT = 12;
+const Home = () => {
+  const { data, error, isPending } = useQuery(trendingAnimeQuery());
 
-const Home = ({ data, error }: { data: Anime[]; error: string | null }) => {
   return (
     <Layout>
       <h1>Anime Discovery</h1>
@@ -26,29 +27,19 @@ const Home = ({ data, error }: { data: Anime[]; error: string | null }) => {
         For browsering animes from the API list, please visit our{' '}
         <Link href="/search">Browse section</Link>
       </p>
-      <h2>Top {ANIME_LIMIT} Trending Animes</h2>
-      {error ? error : <AnimeList list={data} />}
+      <h2>Top {TRENDING_LIMIT} Trending Animes</h2>
+      {error ? error.message : isPending ? <LoadingSpinner /> : <AnimeList list={data} />}
     </Layout>
   );
 };
 
 export async function getServerSideProps() {
-  let data = [];
-  let error = null;
-
-  try {
-    const response = await fetch('/trending/anime', {
-      limit: ANIME_LIMIT
-    });
-    data = _get(response, 'data.data', []);
-  } catch (err) {
-    error = err instanceof Error ? err.message : String(err);
-  }
+  const queryClient = makeQueryClient();
+  await queryClient.prefetchQuery(trendingAnimeQuery());
 
   return {
     props: {
-      data,
-      error
+      dehydratedState: dehydrate(queryClient)
     }
   };
 }
