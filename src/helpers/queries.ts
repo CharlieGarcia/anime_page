@@ -1,6 +1,10 @@
-import { infiniteQueryOptions, queryOptions, skipToken } from '@tanstack/react-query';
+import {
+  infiniteQueryOptions,
+  queryOptions,
+  skipToken
+} from '@tanstack/react-query';
 import _kebabCase from 'lodash/kebabCase';
-import { fetch, formatGenres } from './request';
+import { kitsuGet, formatGenres } from './request';
 import { ITEMS_PER_PAGE } from '@/constants';
 import { Anime, Category, Episode, Genres, SearchFieldsType } from '@/types';
 
@@ -32,7 +36,10 @@ export type SearchRequest = {
   page: number;
 };
 
-function nextOffset<T>(pages: { items: T[]; total: number }[], perPage: number) {
+function nextOffset<T>(
+  pages: { items: T[]; total: number }[],
+  perPage: number
+) {
   const loaded = pages.length * perPage;
   return loaded < pages[0].total ? loaded : undefined;
 }
@@ -41,10 +48,13 @@ export const trendingAnimeQuery = () =>
   queryOptions({
     queryKey: ['anime', 'trending', TRENDING_LIMIT],
     queryFn: async () => {
-      const response = await fetch<JsonApiResponse<Anime[]>>('/trending/anime', {
-        limit: TRENDING_LIMIT
-      });
-      return response.data.data;
+      const response = await kitsuGet<JsonApiResponse<Anime[]>>(
+        '/trending/anime',
+        {
+          limit: TRENDING_LIMIT
+        }
+      );
+      return response.data;
     }
   });
 
@@ -52,8 +62,8 @@ export const animeDetailsQuery = (id: string) =>
   queryOptions({
     queryKey: ['anime', id],
     queryFn: async () => {
-      const response = await fetch<JsonApiResponse<Anime>>(`/anime/${id}`);
-      return response.data.data;
+      const response = await kitsuGet<JsonApiResponse<Anime>>(`/anime/${id}`);
+      return response.data;
     }
   });
 
@@ -61,8 +71,10 @@ export const animeCategoriesQuery = (id: string) =>
   queryOptions({
     queryKey: ['anime', id, 'categories'],
     queryFn: async (): Promise<CategoryTag[]> => {
-      const response = await fetch<JsonApiResponse<Category[]>>(`/anime/${id}/categories`);
-      return response.data.data.map((category) => ({
+      const response = await kitsuGet<JsonApiResponse<Category[]>>(
+        `/anime/${id}/categories`
+      );
+      return response.data.map((category) => ({
         slug: `/related/${_kebabCase(category.attributes.title)}`,
         id: category.id,
         title: category.attributes.title
@@ -75,21 +87,22 @@ export const animeEpisodesQuery = (id: string) =>
     queryKey: ['anime', id, 'episodes'],
     initialPageParam: 0,
     queryFn: async ({ pageParam }) => {
-      const response = await fetch<JsonApiResponse<Episode[]>>(`/anime/${id}/episodes`, {
-        'page[limit]': EPISODES_PER_PAGE,
-        'page[offset]': pageParam
-      });
+      const response = await kitsuGet<JsonApiResponse<Episode[]>>(
+        `/anime/${id}/episodes`,
+        {
+          'page[limit]': EPISODES_PER_PAGE,
+          'page[offset]': pageParam
+        }
+      );
       return {
-        items: response.data.data.map(
-          (episode): EpisodeItem => ({
-            id: episode.id,
-            title: episode.attributes.canonicalTitle || 'Not Aired Yet',
-            number: String(episode.attributes.number ?? ''),
-            thumbnailUrl: episode.attributes.thumbnail?.original || '',
-            synopsis: episode.attributes.synopsis || ''
-          })
-        ),
-        total: response.data.meta?.count ?? 0
+        items: response.data.map((episode): EpisodeItem => ({
+          id: episode.id,
+          title: episode.attributes.canonicalTitle || 'Not Aired Yet',
+          number: String(episode.attributes.number ?? ''),
+          thumbnailUrl: episode.attributes.thumbnail?.original || '',
+          synopsis: episode.attributes.synopsis || ''
+        })),
+        total: response.meta?.count ?? 0
       };
     },
     getNextPageParam: (_lastPage, pages) => nextOffset(pages, EPISODES_PER_PAGE)
@@ -100,14 +113,14 @@ export const relatedAnimeQuery = (slug: string) =>
     queryKey: ['anime', 'related', slug],
     initialPageParam: 0,
     queryFn: async ({ pageParam }) => {
-      const response = await fetch<JsonApiResponse<Anime[]>>('/anime', {
+      const response = await kitsuGet<JsonApiResponse<Anime[]>>('/anime', {
         'filter[categories]': slug,
         'page[limit]': RELATED_PER_PAGE,
         'page[offset]': pageParam
       });
       return {
-        items: response.data.data,
-        total: response.data.meta?.count ?? 0
+        items: response.data,
+        total: response.meta?.count ?? 0
       };
     },
     getNextPageParam: (_lastPage, pages) => nextOffset(pages, RELATED_PER_PAGE)
@@ -132,13 +145,13 @@ export const searchAnimeQuery = (search: SearchRequest | null) =>
     queryKey: ['anime', 'search', search],
     queryFn: search
       ? async () => {
-          const response = await fetch<JsonApiResponse<Anime[]>>(
+          const response = await kitsuGet<JsonApiResponse<Anime[]>>(
             '/anime',
             buildSearchParams(search.fields, search.page)
           );
           return {
-            animeList: response.data.data,
-            count: response.data.meta?.count ?? 0
+            animeList: response.data,
+            count: response.meta?.count ?? 0
           };
         }
       : skipToken
@@ -148,7 +161,7 @@ export const genresQuery = () =>
   queryOptions({
     queryKey: ['genres'],
     queryFn: async () => {
-      const response = await fetch<JsonApiResponse<Genres[]>>('/genres');
-      return formatGenres(response.data.data);
+      const response = await kitsuGet<JsonApiResponse<Genres[]>>('/genres');
+      return formatGenres(response.data);
     }
   });
