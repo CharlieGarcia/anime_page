@@ -6,6 +6,10 @@ import AnimeList from '@/components/animeList';
 import LoadingSpinner from '@/components/loadingSpinner';
 import { makeQueryClient } from '@/helpers/queryClient';
 import { TRENDING_LIMIT, trendingAnimeQuery } from '@/helpers/queries';
+import {
+  REVALIDATE_AFTER_ERROR_SECONDS,
+  REVALIDATE_SECONDS
+} from '@/constants';
 
 const Home = () => {
   const { data, error, isPending } = useQuery(trendingAnimeQuery());
@@ -33,14 +37,23 @@ const Home = () => {
   );
 };
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const queryClient = makeQueryClient();
-  await queryClient.prefetchQuery(trendingAnimeQuery());
+  let revalidate = REVALIDATE_SECONDS;
+
+  try {
+    await queryClient.fetchQuery(trendingAnimeQuery());
+  } catch {
+    // Kitsu failed: render without prefetched data (the browser fetches it instead)
+    // and regenerate the page sooner.
+    revalidate = REVALIDATE_AFTER_ERROR_SECONDS;
+  }
 
   return {
     props: {
       dehydratedState: dehydrate(queryClient)
-    }
+    },
+    revalidate
   };
 }
 

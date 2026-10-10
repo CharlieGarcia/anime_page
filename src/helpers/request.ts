@@ -3,6 +3,16 @@ import { Genres } from '../types';
 const API_ENDPOINT =
   process.env.NEXT_PUBLIC_API_ENDPOINT || 'https://kitsu.io/api/edge';
 
+export class KitsuRequestError extends Error {
+  status: number;
+
+  constructor(status: number, statusText: string) {
+    super(`Kitsu request failed: ${status} ${statusText}`);
+    this.name = 'KitsuRequestError';
+    this.status = status;
+  }
+}
+
 export async function kitsuGet<T>(
   endPoint: string,
   params: Record<string, string | number> = {}
@@ -21,9 +31,7 @@ export async function kitsuGet<T>(
   );
 
   if (!response.ok) {
-    throw new Error(
-      `Kitsu request failed: ${response.status} ${response.statusText}`
-    );
+    throw new KitsuRequestError(response.status, response.statusText);
   }
 
   return response.json();
