@@ -1,7 +1,7 @@
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { GetStaticPaths, GetStaticPropsContext } from 'next';
 import { dehydrate, useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, SxProps, Typography } from '@mui/material';
 import Link from 'next/link';
 import Image from '@/components/image';
 import Accordion from '@/components/accordion';
@@ -20,10 +20,10 @@ import {
   REVALIDATE_SECONDS
 } from '@/constants';
 
-const styles: { tags: CSSProperties } = {
+const styles: Record<string, SxProps> = {
   tags: {
-    marginRight: 15,
-    marginTop: 15,
+    marginRight: '15px',
+    marginTop: '15px',
     textTransform: 'capitalize'
   }
 };
@@ -74,7 +74,7 @@ function Detail({ id }: DetailProps) {
       <Box>
         {info.attributes?.coverImage?.large && (
           <Image
-            style={{ width: '100%', height: 'auto' }}
+            sx={{ width: '100%', height: 'auto' }}
             src={info.attributes.coverImage.large}
             alt={info.attributes?.titles?.en_jp || 'Anime cover'}
           />
@@ -90,7 +90,7 @@ function Detail({ id }: DetailProps) {
         {categories.map((category) => (
           <Button
             variant="outlined"
-            style={styles.tags}
+            sx={styles.tags}
             key={category.id}
             component={Link}
             href={category.slug}>
@@ -98,7 +98,7 @@ function Detail({ id }: DetailProps) {
           </Button>
         ))}
       </Box>
-      <Box style={{ marginTop: '15px' }}>
+      <Box sx={{ marginTop: '15px' }}>
         <Typography
           variant="h2"
           component="h2"
@@ -106,7 +106,7 @@ function Detail({ id }: DetailProps) {
           sx={{ marginBottom: '15px' }}>
           Episodes
         </Typography>
-        <Box style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
           {episodes.map((episode) => (
             <Accordion
               key={episode.id}
@@ -115,7 +115,7 @@ function Detail({ id }: DetailProps) {
               thumbnailUrl={episode.thumbnailUrl}
             />
           ))}
-          <div ref={sentinelRef} style={{ height: '20px' }} />
+          <Box ref={sentinelRef} sx={{ height: '20px' }} />
           {isLoadingEpisodes && <Typography>Loading episodes...</Typography>}
           {episodes.length === 0 && !isLoadingEpisodes && (
             <Typography>No episodes found</Typography>

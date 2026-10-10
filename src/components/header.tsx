@@ -20,9 +20,12 @@ export const Header = () => {
   return (
     <Box component="header" sx={headerStyles}>
       <Box component="nav" aria-label="Main">
-        <Link href="/" style={{ textDecoration: 'none', fontSize: '24px' }}>
+        <Box
+          component={Link}
+          href="/"
+          sx={{ textDecoration: 'none', fontSize: '24px' }}>
           My Anime
-        </Link>
+        </Box>
       </Box>
       <ThemeToggle />
     </Box>

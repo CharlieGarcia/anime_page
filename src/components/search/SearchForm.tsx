@@ -29,13 +29,25 @@ function SearchForm({
   const { data: genres = [] } = useQuery(genresQuery());
 
   const separationMargin = { marginTop: '8px' } as SxProps;
+  // Keeps the legend available to screen readers without showing it
+  const visuallyHidden = {
+    position: 'absolute',
+    width: '1px',
+    height: '1px',
+    padding: 0,
+    margin: '-1px',
+    overflow: 'hidden',
+    clip: 'rect(0,0,0,0)',
+    whiteSpace: 'nowrap',
+    border: 0
+  } as SxProps;
   const gridSize = { xs: 12, sm: 6, md: 3 } as GridBaseProps['size'];
 
   return (
     <form onSubmit={fetchAnimes}>
       <Box role="region" aria-label="Search filters">
-        <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
-          <legend style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>Search filters</legend>
+        <Box component="fieldset" sx={{ border: 'none', padding: 0, margin: 0 }}>
+          <Box component="legend" sx={visuallyHidden}>Search filters</Box>
       <Grid container spacing={2}>
         <Grid size={gridSize} sx={separationMargin}>
           <CustomTextField
@@ -110,7 +122,7 @@ function SearchForm({
           Clear filters
         </Button>
       </Grid>
-        </fieldset>
+        </Box>
       </Box>
     </form>
   );

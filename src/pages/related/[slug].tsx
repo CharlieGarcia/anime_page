@@ -34,7 +34,7 @@ function Related() {
           {error ? <Typography>{error.message}</Typography> : null}
           {animes.length ? <AnimeList list={animes} /> : null}
         </Box>
-        <div ref={sentinelRef} style={{ height: '20px' }} />
+        <Box ref={sentinelRef} sx={{ height: '20px' }} />
         {isLoadingRelatedAnimes && <Typography aria-live="polite">Loading related animes...</Typography>}
         {animes.length === 0 && !isPending && (
           <Typography>No related animes found</Typography>

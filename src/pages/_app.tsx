@@ -1,5 +1,6 @@
 import React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
+import GlobalStyles from '@mui/material/GlobalStyles';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { AppCacheProvider } from '@mui/material-nextjs/v16-pagesRouter';
 import { HydrationBoundary, QueryClientProvider } from '@tanstack/react-query';
@@ -23,6 +24,21 @@ const theme = createTheme({
   }
 });
 
+const reducedMotionStyles = (
+  <GlobalStyles
+    styles={{
+      '@media (prefers-reduced-motion: reduce)': {
+        '*, *::before, *::after': {
+          animationDuration: '0.01ms !important',
+          animationIterationCount: '1 !important',
+          transitionDuration: '0.01ms !important',
+          scrollBehavior: 'auto !important'
+        }
+      }
+    }}
+  />
+);
+
 export default function App(props: {
   Component: React.ElementType;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,18 +56,7 @@ export default function App(props: {
             defaultMode="system"
             modeStorageKey={MODE_STORAGE_KEY}>
             <CssBaseline />
-            <style global jsx>{`
-              @media (prefers-reduced-motion: reduce) {
-                *,
-                *::before,
-                *::after {
-                  animation-duration: 0.01ms !important;
-                  animation-iteration-count: 1 !important;
-                  transition-duration: 0.01ms !important;
-                  scroll-behavior: auto !important;
-                }
-              }
-            `}</style>
+            {reducedMotionStyles}
             <Component {...pageProps} />
           </ThemeProvider>
         </HydrationBoundary>
