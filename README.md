@@ -14,7 +14,7 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 
 - **Framework:** Next.js 16 (Pages Router)
 - **UI:** React 19, [MUI](https://mui.com/) (Emotion), Roboto via `@fontsource/roboto`
-- **Data:** [axios](https://axios-http.com/) against the Kitsu API
+- **Data:** Native `fetch` + [TanStack Query](https://tanstack.com/query) against the Kitsu API
 - **Tooling:** ESLint, Prettier, Husky + lint-staged (Prettier on staged files)
 
 ## Prerequisites
@@ -39,24 +39,24 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 
 ## Scripts
 
-| Command        | Description              |
-| -------------- | ------------------------ |
-| `bun run dev`  | Start dev server (Next.js) |
-| `bun run build`| Production build         |
-| `bun run start`| Run production server    |
-| `bun run lint` | Run ESLint               |
+| Command         | Description                |
+| --------------- | -------------------------- |
+| `bun run dev`   | Start dev server (Next.js) |
+| `bun run build` | Production build           |
+| `bun run start` | Run production server      |
+| `bun run lint`  | Run ESLint                 |
 
 Open [http://localhost:3000](http://localhost:3000) when using `bun run dev`.
 
 ## Project layout
 
-| Path            | Role |
-| --------------- | ---- |
-| `pages/`        | Routes (`index`, `search`, `details/[id]`, `related/[slug]`) |
-| `components/`   | Layout, cards, search form, pagination, etc. |
-| `helpers/request.js` | Axios wrapper for the Kitsu API |
-| `context/theme.js` | Dark/light toggle context |
-| `constants.js`  | Season, status, sort, and filter enums for browse |
+| Path                 | Role                                                         |
+| -------------------- | ------------------------------------------------------------ |
+| `pages/`             | Routes (`index`, `search`, `details/[id]`, `related/[slug]`) |
+| `components/`        | Layout, cards, search form, pagination, etc.                 |
+| `helpers/request.js` | Axios wrapper for the Kitsu API                              |
+| `context/theme.js`   | Dark/light toggle context                                    |
+| `constants.js`       | Season, status, sort, and filter enums for browse            |
 
 Remote images are allowed from `media.kitsu.io` (see `next.config.js`).
 
