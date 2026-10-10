@@ -1,7 +1,7 @@
 import React from 'react';
 import { Header } from './header';
 import { Footer } from './footer';
-import { Container } from '@mui/material';
+import { Box, Container } from '@mui/material';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -10,9 +10,10 @@ type LayoutProps = {
 export const Layout = ({ children }: LayoutProps) => {
   return (
     <>
-      <a
+      <Box
+        component="a"
         href="#main-content"
-        style={{
+        sx={{
           position: 'absolute',
           left: '-9999px',
           top: 0,
@@ -20,7 +21,7 @@ export const Layout = ({ children }: LayoutProps) => {
         }}
         tabIndex={0}>
         Skip to content
-      </a>
+      </Box>
       <Container maxWidth="lg">
         <Header />
         <Container component="main" id="main-content" tabIndex={-1}>

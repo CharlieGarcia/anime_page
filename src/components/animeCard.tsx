@@ -4,7 +4,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { CardActionArea } from '@mui/material';
+import { Box, CardActionArea } from '@mui/material';
 import { Anime } from '@/types';
 
 export type AnimeCardProps = Anime;
@@ -17,7 +17,10 @@ const AnimeCard = ({ id, attributes }: AnimeCardProps): JSX.Element => {
   const posterImageUrl = posterImage?.small;
 
   return (
-    <Link style={{ textDecoration: 'none' }} href={`/details/${id}`}>
+    <Box
+      component={Link}
+      href={`/details/${id}`}
+      sx={{ textDecoration: 'none' }}>
       <Card sx={{ maxWidth: '284px' }}>
         <CardActionArea>
           {posterImageUrl && (
@@ -47,7 +50,7 @@ const AnimeCard = ({ id, attributes }: AnimeCardProps): JSX.Element => {
           </CardContent>
         </CardActionArea>
       </Card>
-    </Link>
+    </Box>
   );
 };
 
