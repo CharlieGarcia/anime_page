@@ -21,12 +21,13 @@ const AnimeCard = ({ id, attributes }: AnimeCardProps): JSX.Element => {
       component={Link}
       href={`/details/${id}`}
       sx={{ textDecoration: 'none' }}>
-      <Card sx={{ maxWidth: '284px' }}>
+      <Card sx={{ height: '100%' }}>
         <CardActionArea>
           {posterImageUrl && (
             <CardMedia
               component="img"
-              height={402}
+              // Kitsu's small poster is 284x402; keep that shape at any card width
+              sx={{ aspectRatio: '284 / 402' }}
               image={posterImageUrl}
               alt={titleEnglish}
             />
