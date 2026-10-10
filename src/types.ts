@@ -36,43 +36,43 @@ export type Anime = {
 }
 
 type Attributes = {
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   slug: string;
-  synopsis: string;
-  description: string;
+  synopsis: string | null;
+  description: string | null;
   coverImageTopOffset: number;
   titles: Titles;
   canonicalTitle: string;
   abbreviatedTitles: string[];
-  averageRating: string;
+  averageRating: string | null;
   ratingFrequencies: { [key: string]: string };
   userCount: number;
   favoritesCount: number;
-  startDate: Date;
-  endDate: Date;
-  nextRelease: null;
+  startDate: string | null;
+  endDate: string | null;
+  nextRelease: string | null;
   popularityRank: number;
-  ratingRank: number;
-  ageRating: string;
-  ageRatingGuide: string;
+  ratingRank: number | null;
+  ageRating: string | null;
+  ageRatingGuide: string | null;
   subtype: string;
   status: string;
-  tba: null;
-  posterImage: PosterImage;
-  coverImage: CoverImage;
-  episodeCount: number;
-  episodeLength: number;
-  totalLength: number;
-  youtubeVideoId: string;
+  tba: string | null;
+  posterImage: PosterImage | null;
+  coverImage: CoverImage | null;
+  episodeCount: number | null;
+  episodeLength: number | null;
+  totalLength: number | null;
+  youtubeVideoId: string | null;
   showType: string;
   nsfw: boolean;
 }
 
 type CoverImage = {
-  tiny: string;
-  large: string;
-  small: string;
+  tiny?: string;
+  large?: string;
+  small?: string;
   original: string;
   meta: Meta;
 }
@@ -89,24 +89,22 @@ type Dimensions = {
 }
 
 type Large = {
-  width: number;
-  height: number;
+  width: number | null;
+  height: number | null;
 }
 
 type PosterImage = {
-  tiny: string;
-  large: string;
-  small: string;
-  medium: string;
+  tiny?: string;
+  large?: string;
+  small?: string;
+  medium?: string;
   original: string;
   meta: Meta;
 }
 
+// Keyed by locale (en, en_jp, ja_jp, ...); which locales are present varies per title.
 type Titles = {
-  en: string;
-  en_jp: string;
-  en_us: string;
-  ja_jp: string;
+  [locale: string]: string | null | undefined;
 }
 
 type AnimeLinks = {
