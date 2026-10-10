@@ -1,4 +1,3 @@
-import _map from 'lodash/map';
 import { Genres } from '../types';
 
 const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
@@ -30,5 +29,5 @@ export async function kitsuGet<T>(
 }
 
 export function formatGenres(genres: Genres[]): string[] | [] {
-  return _map(genres, 'attributes.slug') || [];
+  return genres.map((genre) => genre.attributes.slug);
 }

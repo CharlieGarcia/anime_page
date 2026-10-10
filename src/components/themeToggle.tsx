@@ -1,5 +1,4 @@
 import React from 'react';
-import { capitalize } from 'lodash';
 import { FormControlLabel, Switch } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import ColorModeContext from '../context/theme';
@@ -67,7 +66,7 @@ export const ThemeToggle = () => {
   return (
     <FormControlLabel
       control={<MaterialUISwitch sx={{ m: 1 }} checked={theme.palette.mode === 'dark'} onChange={colorMode.toggleColorMode} />}
-      label={`${capitalize(theme.palette.mode)} Mode`}
+      label={theme.palette.mode === 'dark' ? 'Dark Mode' : 'Light Mode'}
     />
   );
 };
