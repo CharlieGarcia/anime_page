@@ -1,4 +1,5 @@
 module.exports = {
+  transpilePackages: ['@mui/material-nextjs'],
   images: {
     remotePatterns: [
       {

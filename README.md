@@ -55,7 +55,6 @@ Open [http://localhost:3000](http://localhost:3000) when using `bun run dev`.
 | `pages/`             | Routes (`index`, `search`, `details/[id]`, `related/[slug]`) |
 | `components/`        | Layout, cards, search form, pagination, etc.                 |
 | `helpers/request.js` | Axios wrapper for the Kitsu API                              |
-| `context/theme.js`   | Dark/light toggle context                                    |
 | `constants.js`       | Season, status, sort, and filter enums for browse            |
 
 Remote images are allowed from `media.kitsu.io` (see `next.config.js`).
