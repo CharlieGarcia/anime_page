@@ -5,7 +5,7 @@ import { Anime } from '@/types';
 
 const styles: SxProps = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(4, auto)',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
   gridTemplateRows: 'auto',
   gap: '30px'
 };
@@ -18,7 +18,7 @@ const AnimeList = ({ list = [] }: AnimeListProps): JSX.Element => {
   return (
     <Box sx={styles}>
       {list.length
-        ? list.map((anime, index) => <AnimeCard key={index} {...anime} />)
+        ? list.map((anime) => <AnimeCard key={anime.id} {...anime} />)
         : null}
     </Box>
   );
