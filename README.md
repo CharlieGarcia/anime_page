@@ -39,14 +39,19 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 
 ## Scripts
 
-| Command         | Description                |
-| --------------- | -------------------------- |
-| `bun run dev`   | Start dev server (Next.js) |
-| `bun run build` | Production build           |
-| `bun run start` | Run production server      |
-| `bun run lint`  | Run ESLint                 |
+| Command              | Description                   |
+| -------------------- | ----------------------------- |
+| `bun run dev`        | Start dev server (Next.js)    |
+| `bun run build`      | Production build              |
+| `bun run start`      | Run production server         |
+| `bun run lint`       | Run ESLint                    |
+| `bun run test`       | Run unit tests (Vitest)       |
+| `bun run test:watch` | Run unit tests in watch mode  |
+| `bun run test:e2e`   | Run the Playwright smoke test |
 
 Open [http://localhost:3000](http://localhost:3000) when using `bun run dev`.
+
+The smoke test builds and starts the app itself and reads live data from the Kitsu API. Install its browser once with `bunx playwright install chromium`.
 
 ## Project layout
 
