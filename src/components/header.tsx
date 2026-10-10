@@ -1,12 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
-import { Box, ColorSystemOptions, SxProps } from '@mui/material';
+import { Box, SxProps } from '@mui/material';
 import { ThemeToggle } from './themeToggle';
 
 export const Header = () => {
   const headerStyles = [
-    (theme: ColorSystemOptions) => ({
-      backgroundColor: theme.palette?.background?.default,
+    {
+      backgroundColor: 'background.default',
       padding: '24px',
       position: 'sticky',
       top: '0',
@@ -14,7 +14,7 @@ export const Header = () => {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center'
-    })
+    }
   ] as SxProps;
 
   return (

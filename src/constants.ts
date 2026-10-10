@@ -45,3 +45,6 @@ export const ANIME_AGE_RATING = {
 };
 
 export const ITEMS_PER_PAGE = 12;
+
+// localStorage key holding the user's light/dark preference
+export const MODE_STORAGE_KEY = 'theme';

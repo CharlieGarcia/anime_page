@@ -1,7 +1,6 @@
 import React from 'react';
 import { FormControlLabel, Switch } from '@mui/material';
-import { styled, useTheme } from '@mui/material/styles';
-import ColorModeContext from '../context/theme';
+import { styled, useColorScheme } from '@mui/material/styles';
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -60,13 +59,17 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 }));
 
 export const ThemeToggle = () => {
-  const theme = useTheme();
-  const colorMode = React.useContext(ColorModeContext);
+  const { mode, systemMode, setMode } = useColorScheme();
+  const resolvedMode = mode === 'system' ? systemMode : mode;
+  const isDark = resolvedMode === 'dark';
 
   return (
     <FormControlLabel
-      control={<MaterialUISwitch sx={{ m: 1 }} checked={theme.palette.mode === 'dark'} onChange={colorMode.toggleColorMode} />}
-      label={theme.palette.mode === 'dark' ? 'Dark Mode' : 'Light Mode'}
+      // The mode is only known in the browser, so keep the toggle hidden until then
+      // instead of rendering it in the wrong position.
+      sx={{ visibility: resolvedMode ? 'visible' : 'hidden' }}
+      control={<MaterialUISwitch sx={{ m: 1 }} checked={isDark} onChange={() => setMode(isDark ? 'light' : 'dark')} />}
+      label={isDark ? 'Dark Mode' : 'Light Mode'}
     />
   );
 };
