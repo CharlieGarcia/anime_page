@@ -10,26 +10,11 @@ import { Anime } from '@/types';
 export type AnimeCardProps = Anime;
 
 const AnimeCard = ({ id, attributes }: AnimeCardProps): JSX.Element => {
-  const {
-    subtype = '',
-    titles = {
-      en: '',
-      en_jp: '',
-      ja_jp: ''
-    },
-    posterImage = {
-      small: ''
-    },
-    episodeCount = '',
-    episodeLength = ''
-  } = attributes;
-  const {
-    en: englishTitle = '',
-    en_jp: enGlishJapaneseTitle = 'N/A',
-    ja_jp: titleRomaji = 'N/A'
-  } = titles;
-  const { small: posterImageUrl } = posterImage || { small: '' };
-  const titleEnglish = englishTitle || enGlishJapaneseTitle;
+  const { subtype, titles, posterImage, episodeCount, episodeLength } =
+    attributes;
+  const titleRomaji = titles.ja_jp || 'N/A';
+  const titleEnglish = titles.en || titles.en_jp || 'N/A';
+  const posterImageUrl = posterImage?.small;
 
   return (
     <Link style={{ textDecoration: 'none' }} href={`/details/${id}`}>
