@@ -29,13 +29,13 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
    bun install
    ```
 
-2. Create a `.env.local` file in the project root and set the Kitsu API base URL:
+2. Optional: to point the app at a different Kitsu API base URL, copy `.env-template` to `.env.local` and change the value:
 
    ```bash
    NEXT_PUBLIC_API_ENDPOINT=https://kitsu.io/api/edge
    ```
 
-   The app builds request URLs as `${NEXT_PUBLIC_API_ENDPOINT}` plus paths such as `/trending/anime` and `/anime`.
+   Without a `.env.local` the app uses `https://kitsu.io/api/edge`. Request URLs are built as `${NEXT_PUBLIC_API_ENDPOINT}` plus paths such as `/trending/anime` and `/anime`.
 
 ## Scripts
 

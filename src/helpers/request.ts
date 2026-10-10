@@ -1,6 +1,7 @@
 import { Genres } from '../types';
 
-const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
+const API_ENDPOINT =
+  process.env.NEXT_PUBLIC_API_ENDPOINT || 'https://kitsu.io/api/edge';
 
 export async function kitsuGet<T>(
   endPoint: string,
