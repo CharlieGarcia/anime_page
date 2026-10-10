@@ -48,3 +48,8 @@ export const ITEMS_PER_PAGE = 12;
 
 // localStorage key holding the user's light/dark preference
 export const MODE_STORAGE_KEY = 'theme';
+
+// How long a statically generated page is served before it is regenerated in the background
+export const REVALIDATE_SECONDS = 60 * 60;
+// Shorter window used when Kitsu failed during generation, so the page is retried soon
+export const REVALIDATE_AFTER_ERROR_SECONDS = 60;

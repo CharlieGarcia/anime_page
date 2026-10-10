@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-import { GetServerSidePropsContext } from 'next';
+import { GetStaticPaths, GetStaticPropsContext } from 'next';
 import { dehydrate, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { Box, Button, Typography } from '@mui/material';
 import Link from 'next/link';
@@ -14,6 +14,11 @@ import {
   animeDetailsQuery,
   animeEpisodesQuery
 } from '@/helpers/queries';
+import { KitsuRequestError } from '@/helpers/request';
+import {
+  REVALIDATE_AFTER_ERROR_SECONDS,
+  REVALIDATE_SECONDS
+} from '@/constants';
 
 const styles: { tags: CSSProperties } = {
   tags: {
@@ -121,23 +126,44 @@ function Detail({ id }: DetailProps) {
   );
 }
 
-export async function getServerSideProps({
+// No details pages are built ahead of time; each one is generated on its first request.
+export const getStaticPaths: GetStaticPaths = async () => ({
+  paths: [],
+  fallback: 'blocking'
+});
+
+export async function getStaticProps({
   params
-}: GetServerSidePropsContext<{ id: string }>) {
+}: GetStaticPropsContext<{ id: string }>) {
   const id = params?.id ?? '';
   const queryClient = makeQueryClient();
+  let revalidate = REVALIDATE_SECONDS;
 
-  await Promise.all([
-    queryClient.prefetchQuery(animeDetailsQuery(id)),
+  const [details] = await Promise.allSettled([
+    queryClient.fetchQuery(animeDetailsQuery(id)),
     queryClient.prefetchQuery(animeCategoriesQuery(id)),
     queryClient.prefetchInfiniteQuery(animeEpisodesQuery(id))
   ]);
+
+  if (details.status === 'rejected') {
+    // Kitsu answers 404 for an unknown id and 400 for a malformed one
+    if (
+      details.reason instanceof KitsuRequestError &&
+      [400, 404].includes(details.reason.status)
+    ) {
+      return { notFound: true, revalidate };
+    }
+    // Kitsu failed: render without prefetched data (the browser fetches it instead)
+    // and regenerate the page sooner.
+    revalidate = REVALIDATE_AFTER_ERROR_SECONDS;
+  }
 
   return {
     props: {
       id,
       dehydratedState: dehydrate(queryClient)
-    }
+    },
+    revalidate
   };
 }
 

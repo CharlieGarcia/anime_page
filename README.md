@@ -4,9 +4,9 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 
 ## Features
 
-- **Home** — Trending anime (server-rendered)
+- **Home** — Trending anime (statically generated, refreshed hourly)
 - **Browse** (`/search`) — Filter by season, year, status, categories, subtype, age rating; sort and paginate results
-- **Details** (`/details/[id]`) — Synopsis, metadata, genres, and episodes with infinite scroll
+- **Details** (`/details/[id]`) — Synopsis, metadata, genres, and episodes with infinite scroll (generated on first visit, refreshed hourly)
 - **Related** (`/related/[slug]`) — Anime sharing a category/genre slug, with infinite scroll
 - **Theme** — Light/dark mode (toggle in the header; preference stored in `localStorage`, with system preference as default)
 
