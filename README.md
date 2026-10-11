@@ -16,6 +16,7 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 - **Framework:** Next.js 16 (Pages Router), TypeScript
 - **UI:** React 19, [MUI](https://mui.com/) (Emotion)
 - **Data:** Native `fetch` + [TanStack Query](https://tanstack.com/query) against the Kitsu API. Responses are cached and treated as fresh for 3000 ms (`QUERY_CACHE_TTL_MS` in `src/helpers/queryClient.ts`); after that, the next use refetches in the background
+- **Database:** Postgres with [Drizzle ORM](https://orm.drizzle.team/); Docker for the local database
 - **Auth:** [Clerk](https://clerk.com/) (`@clerk/nextjs`) for sign-up, sign-in and sessions
 - **Testing:** Vitest + React Testing Library (unit), Playwright (smoke test)
 - **Tooling:** ESLint, Prettier, Husky + lint-staged (ESLint and Prettier on staged files before each commit)
@@ -23,6 +24,7 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 ## Prerequisites
 
 - [Bun](https://bun.sh/) — the package manager and script runner. CI uses 1.4.2
+- [Docker](https://www.docker.com/) — runs the local Postgres database. Only needed for the account features
 - [Node.js](https://nodejs.org/) 20.9 or newer — Next.js itself runs on Node, including when started through `bun run`. CI uses Node 24
 
 ## Setup
@@ -50,7 +52,18 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 
    The app builds and browsing works without them; only the account features need them.
 
-4. Start the dev server and open [http://localhost:3000](http://localhost:3000):
+4. For anything that stores data (the `/api` routes), add the database URL to `.env.local`, then start Postgres and create the tables:
+
+   ```bash
+   DATABASE_URL="postgres://anime:anime@localhost:5432/anime_page"
+   ```
+
+   ```bash
+   bun run db:up
+   bun run db:migrate
+   ```
+
+5. Start the dev server and open [http://localhost:3000](http://localhost:3000):
 
    ```bash
    bun run dev
@@ -58,18 +71,30 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 
 ## Scripts
 
-| Command              | Description                   |
-| -------------------- | ----------------------------- |
-| `bun run dev`        | Start dev server (Next.js)    |
-| `bun run build`      | Production build              |
-| `bun run start`      | Run production server         |
-| `bun run lint`       | Run ESLint                    |
-| `bun run typecheck`  | Type-check with TypeScript    |
-| `bun run test`       | Run unit tests (Vitest)       |
-| `bun run test:watch` | Run unit tests in watch mode  |
-| `bun run test:e2e`   | Run the Playwright smoke test |
+| Command               | Description                                   |
+| --------------------- | --------------------------------------------- |
+| `bun run dev`         | Start dev server (Next.js)                    |
+| `bun run build`       | Production build                              |
+| `bun run start`       | Run production server                         |
+| `bun run lint`        | Run ESLint                                    |
+| `bun run typecheck`   | Type-check with TypeScript                    |
+| `bun run test`        | Run unit tests (Vitest)                       |
+| `bun run test:watch`  | Run unit tests in watch mode                  |
+| `bun run test:e2e`    | Run the Playwright smoke test                 |
+| `bun run db:up`       | Start the local Postgres (Docker)             |
+| `bun run db:down`     | Stop it (data is kept)                        |
+| `bun run db:generate` | Create a migration from changes to the schema |
+| `bun run db:migrate`  | Apply pending migrations                      |
 
 The smoke test builds and starts the app itself and reads live data from the Kitsu API. Install its browser once with `bunx playwright install chromium`.
+
+## Database
+
+Tables are defined in `src/server/db/schema.ts`. To change them, edit the schema, run `bun run db:generate` to create a migration in `drizzle/`, then `bun run db:migrate` to apply it. Commit the generated files.
+
+A user's row is created the first time they call an API route while signed in; Clerk keeps the credentials, the database keeps the profile. `GET /api/me` returns the signed-in user's row, or 401.
+
+Unit tests for `src/server/` run against an in-memory Postgres (PGlite) with the same migrations, so they need no running database.
 
 ## Pre-commit hook
 
@@ -92,6 +117,10 @@ A GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint, typecheck, uni
 | `src/components/search/`          | Search form and its inputs                                                              |
 | `src/components/authControls.tsx` | Sign in / Sign up buttons and the account menu in the header                            |
 | `src/proxy.ts`                    | Clerk middleware; runs on API routes only, so static pages stay cached                  |
+| `src/pages/api/`                  | API routes: thin handlers that check the user and call `src/server/`                    |
+| `src/server/`                     | Server-only logic: `auth.ts` (who is calling), `users.ts`                               |
+| `src/server/db/`                  | Drizzle client and `schema.ts` (the tables)                                             |
+| `drizzle/`                        | Generated SQL migrations                                                                |
 | `src/helpers/request.ts`          | `kitsuGet`, the `fetch` wrapper for the Kitsu API, and `KitsuRequestError`              |
 | `src/helpers/queries.ts`          | TanStack Query options for every Kitsu request (trending, details, episodes, search...) |
 | `src/helpers/queryClient.ts`      | Creates the `QueryClient` and sets the 3000 ms cache time                               |
