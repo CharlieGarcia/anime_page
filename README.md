@@ -15,7 +15,7 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 - **Framework:** Next.js 16 (Pages Router)
 - **UI:** React 19, [MUI](https://mui.com/) (Emotion), Roboto via `@fontsource/roboto`
 - **Data:** Native `fetch` + [TanStack Query](https://tanstack.com/query) against the Kitsu API
-- **Tooling:** ESLint, Prettier, Husky + lint-staged (Prettier on staged files)
+- **Tooling:** ESLint, Prettier, Husky + lint-staged (ESLint and Prettier on staged files before each commit)
 
 ## Prerequisites
 
@@ -53,6 +53,12 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 Open [http://localhost:3000](http://localhost:3000) when using `bun run dev`.
 
 The smoke test builds and starts the app itself and reads live data from the Kitsu API. Install its browser once with `bunx playwright install chromium`.
+
+## Pre-commit hook
+
+`bun install` sets up a Git pre-commit hook (Husky). It runs `eslint --fix` and Prettier on staged `.ts`/`.tsx` files and Prettier on other staged files, and blocks the commit if ESLint reports an error.
+
+The hook runs `bunx`, so `bun` must be on the `PATH` of whatever runs Git. If a Git client reports `bunx: command not found`, add the path in `~/.config/husky/init.sh`, for example `export PATH="$HOME/.bun/bin:$PATH"`.
 
 ## Continuous integration
 
