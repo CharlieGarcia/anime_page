@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "trello": {
+      "type": "http",
+      "url": "https://mcp.trello.com/v1",
+      "env": {
+        "TRELLO_API_KEY": "$TRELLO_API_KEY",
+        "TRELLO_TOKEN": "$TRELLO_TOKEN"
+      }
+    }
+  }
+}
