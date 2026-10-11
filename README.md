@@ -45,6 +45,7 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 | `bun run build`      | Production build              |
 | `bun run start`      | Run production server         |
 | `bun run lint`       | Run ESLint                    |
+| `bun run typecheck`  | Type-check with TypeScript    |
 | `bun run test`       | Run unit tests (Vitest)       |
 | `bun run test:watch` | Run unit tests in watch mode  |
 | `bun run test:e2e`   | Run the Playwright smoke test |
@@ -52,6 +53,10 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 Open [http://localhost:3000](http://localhost:3000) when using `bun run dev`.
 
 The smoke test builds and starts the app itself and reads live data from the Kitsu API. Install its browser once with `bunx playwright install chromium`.
+
+## Continuous integration
+
+A GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint, typecheck, unit tests and a production build on every pull request and on pushes to `master`.
 
 ## Project layout
 
