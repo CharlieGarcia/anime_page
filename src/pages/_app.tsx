@@ -3,6 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { AppCacheProvider } from '@mui/material-nextjs/v16-pagesRouter';
+import { ClerkProvider } from '@clerk/nextjs';
 import { HydrationBoundary, QueryClientProvider } from '@tanstack/react-query';
 import { makeQueryClient } from '../helpers/queryClient';
 import { MODE_STORAGE_KEY } from '../constants';
@@ -49,18 +50,20 @@ export default function App(props: {
 
   return (
     <AppCacheProvider {...props}>
-      <QueryClientProvider client={queryClient}>
-        <HydrationBoundary state={pageProps.dehydratedState}>
-          <ThemeProvider
-            theme={theme}
-            defaultMode="system"
-            modeStorageKey={MODE_STORAGE_KEY}>
-            <CssBaseline />
-            {reducedMotionStyles}
-            <Component {...pageProps} />
-          </ThemeProvider>
-        </HydrationBoundary>
-      </QueryClientProvider>
+      <ClerkProvider {...pageProps}>
+        <QueryClientProvider client={queryClient}>
+          <HydrationBoundary state={pageProps.dehydratedState}>
+            <ThemeProvider
+              theme={theme}
+              defaultMode="system"
+              modeStorageKey={MODE_STORAGE_KEY}>
+              <CssBaseline />
+              {reducedMotionStyles}
+              <Component {...pageProps} />
+            </ThemeProvider>
+          </HydrationBoundary>
+        </QueryClientProvider>
+      </ClerkProvider>
     </AppCacheProvider>
   );
 }

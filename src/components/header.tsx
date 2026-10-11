@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Box, SxProps } from '@mui/material';
+import { AuthControls } from './authControls';
 import { ThemeToggle } from './themeToggle';
 
 export const Header = () => {
@@ -13,7 +14,9 @@ export const Header = () => {
       zIndex: '2',
       display: 'flex',
       justifyContent: 'space-between',
-      alignItems: 'center'
+      alignItems: 'center',
+      flexWrap: 'wrap',
+      gap: '8px'
     }
   ] as SxProps;
 
@@ -27,7 +30,10 @@ export const Header = () => {
           My Anime
         </Box>
       </Box>
-      <ThemeToggle />
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <ThemeToggle />
+        <AuthControls />
+      </Box>
     </Box>
   );
 };

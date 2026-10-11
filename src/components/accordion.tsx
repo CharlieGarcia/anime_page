@@ -35,7 +35,7 @@ export default function CustomAccordion({
   title,
   synopsis,
   thumbnailUrl
-}: CustomAccordionProps): JSX.Element {
+}: CustomAccordionProps): React.JSX.Element {
   const id = React.useId();
 
   return (

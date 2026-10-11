@@ -20,7 +20,7 @@ const AnimeCard = ({
   id,
   attributes,
   eagerImage = false
-}: AnimeCardProps): JSX.Element => {
+}: AnimeCardProps): React.JSX.Element => {
   const { subtype, titles, posterImage, episodeCount, episodeLength } =
     attributes;
   const titleRomaji = titles.ja_jp || 'N/A';

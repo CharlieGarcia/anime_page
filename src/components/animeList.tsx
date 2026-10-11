@@ -17,7 +17,7 @@ type AnimeListProps = {
   list?: Anime[];
 };
 
-const AnimeList = ({ list = [] }: AnimeListProps): JSX.Element => {
+const AnimeList = ({ list = [] }: AnimeListProps): React.JSX.Element => {
   return (
     <Box sx={styles}>
       {list.length
