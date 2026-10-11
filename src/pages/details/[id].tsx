@@ -63,6 +63,14 @@ function Detail({ id }: DetailProps) {
     );
   }
 
+  const coverImage = info.attributes?.coverImage;
+  const coverSize = coverImage?.meta?.dimensions?.large;
+  // Kitsu covers are 3360x800 unless the API says otherwise
+  const coverAspectRatio =
+    coverSize?.width && coverSize?.height
+      ? `${coverSize.width} / ${coverSize.height}`
+      : '3360 / 800';
+
   return (
     <Layout>
       <Typography variant="h1" component="h1" color="text.secondary">
@@ -72,11 +80,13 @@ function Detail({ id }: DetailProps) {
         {` (${totalEpisodes} episodes)`}
       </Typography>
       <Box>
-        {info.attributes?.coverImage?.large && (
+        {coverImage?.large && (
           <Image
-            sx={{ width: '100%', height: 'auto' }}
-            src={info.attributes.coverImage.large}
+            src={coverImage.large}
             alt={info.attributes?.titles?.en_jp || 'Anime cover'}
+            aspectRatio={coverAspectRatio}
+            sizes="(max-width: 1200px) 100vw, 1104px"
+            preload
           />
         )}
       </Box>
