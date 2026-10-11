@@ -90,7 +90,7 @@ A GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint, typecheck, uni
 
 Imports use the `@/` alias for `src/` (for example `@/helpers/queries`). Unit tests sit next to the code they cover as `*.test.ts(x)`; keep them out of `src/pages/`, where every file becomes a route.
 
-Remote images are allowed from `media.kitsu.io` (see `next.config.js`).
+Posters, covers and episode thumbnails are rendered with `next/image` through `src/components/image.tsx`. Remote images are allowed from `media.kitsu.app` and `media.kitsu.io` (see `next.config.js`).
 
 ## License
 

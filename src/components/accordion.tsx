@@ -24,7 +24,7 @@ const styles: Record<string, SxProps> = {
   },
   image: {
     width: '25%',
-    height: 'auto'
+    flexShrink: 0
   },
   synopsis: {
     width: '73%'
@@ -48,7 +48,14 @@ export default function CustomAccordion({
       </AccordionSummary>
       <AccordionDetails sx={styles.accordion}>
         {thumbnailUrl && (
-          <Image sx={styles.image} src={thumbnailUrl} alt={title} />
+          <Image
+            sx={styles.image}
+            src={thumbnailUrl}
+            alt={title}
+            // Kitsu gives no dimensions for thumbnails; most are 16:9
+            aspectRatio="16 / 9"
+            sizes="(max-width: 1200px) 25vw, 276px"
+          />
         )}
         {synopsis && <Typography sx={styles.synopsis}>{synopsis}</Typography>}
       </AccordionDetails>

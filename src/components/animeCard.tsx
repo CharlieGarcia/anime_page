@@ -2,19 +2,30 @@ import React from 'react';
 import Link from 'next/link';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { Box, CardActionArea } from '@mui/material';
+import Image from './image';
 import { Anime } from '@/types';
 
-export type AnimeCardProps = Anime;
+export type AnimeCardProps = Anime & {
+  // Load the poster straight away; for cards visible when the page opens
+  eagerImage?: boolean;
+};
 
-const AnimeCard = ({ id, attributes }: AnimeCardProps): JSX.Element => {
+// Card width in the anime grid: one column on phones, up to four on desktop
+const POSTER_SIZES =
+  '(max-width: 600px) 100vw, (max-width: 900px) 50vw, (max-width: 1200px) 33vw, 256px';
+
+const AnimeCard = ({
+  id,
+  attributes,
+  eagerImage = false
+}: AnimeCardProps): JSX.Element => {
   const { subtype, titles, posterImage, episodeCount, episodeLength } =
     attributes;
   const titleRomaji = titles.ja_jp || 'N/A';
   const titleEnglish = titles.en || titles.en_jp || 'N/A';
-  const posterImageUrl = posterImage?.small;
+  const posterImageUrl = posterImage?.large || posterImage?.small;
 
   return (
     <Box
@@ -24,12 +35,13 @@ const AnimeCard = ({ id, attributes }: AnimeCardProps): JSX.Element => {
       <Card sx={{ height: '100%' }}>
         <CardActionArea>
           {posterImageUrl && (
-            <CardMedia
-              component="img"
-              // Kitsu's small poster is 284x402; keep that shape at any card width
-              sx={{ aspectRatio: '284 / 402' }}
-              image={posterImageUrl}
+            <Image
+              src={posterImageUrl}
               alt={titleEnglish}
+              // Kitsu posters are 284x402 (small) and 550x780 (large)
+              aspectRatio="284 / 402"
+              sizes={POSTER_SIZES}
+              eager={eagerImage}
             />
           )}
           <CardContent>

@@ -6,6 +6,11 @@ module.exports = {
         protocol: 'https',
         hostname: 'media.kitsu.io',
         port: ''
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.kitsu.app',
+        port: ''
       }
     ]
   }
