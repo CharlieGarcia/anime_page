@@ -1,22 +1,16 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
 import { requireUser } from '@/server/auth';
-import type { User } from '@/server/db/schema';
+import { getDb } from '@/server/db/client';
+import { route } from '@/server/http';
+import { updateProfile } from '@/server/users';
 
-type ErrorBody = { error: string };
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<User | ErrorBody>
-) {
-  if (req.method !== 'GET') {
-    res.setHeader('Allow', 'GET');
-    return res.status(405).json({ error: 'Method not allowed' });
+export default route({
+  // The signed-in user's own profile
+  GET: async (req, res) => {
+    res.status(200).json(await requireUser(req));
+  },
+  // Edit display name, username and bio
+  PATCH: async (req, res) => {
+    const user = await requireUser(req);
+    res.status(200).json(await updateProfile(getDb(), user.id, req.body));
   }
-
-  const user = await requireUser(req);
-  if (!user) {
-    return res.status(401).json({ error: 'Not signed in' });
-  }
-
-  return res.status(200).json(user);
-}
+});

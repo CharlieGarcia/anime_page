@@ -1,6 +1,7 @@
 import React from 'react';
 import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 import { Box, Button } from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
 
 // Sign in / Sign up when signed out, the account menu when signed in.
 // The auth state is only known in the browser, so the box keeps a fixed size
@@ -28,7 +29,15 @@ export const AuthControls = () => (
       </SignUpButton>
     </Show>
     <Show when="signed-in">
-      <UserButton />
+      <UserButton>
+        <UserButton.MenuItems>
+          <UserButton.Link
+            label="Profile"
+            labelIcon={<PersonIcon fontSize="inherit" />}
+            href="/profile"
+          />
+        </UserButton.MenuItems>
+      </UserButton>
     </Show>
   </Box>
 );
