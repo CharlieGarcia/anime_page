@@ -3,7 +3,7 @@ export type Genres = {
   type: string;
   links: GenresLink;
   attributes: GenresAttributes;
-}
+};
 
 type GenresAttributes = {
   createdAt: string;
@@ -11,11 +11,11 @@ type GenresAttributes = {
   name: string;
   slug: string;
   description: null | string;
-}
+};
 
 type GenresLink = {
   self: string;
-}
+};
 
 export type SearchFieldsType = {
   seasonYear: string;
@@ -33,7 +33,7 @@ export type Anime = {
   links: AnimeLinks;
   attributes: Attributes;
   relationships: { [key: string]: Relationship };
-}
+};
 
 type Attributes = {
   createdAt: string;
@@ -67,7 +67,7 @@ type Attributes = {
   youtubeVideoId: string | null;
   showType: string;
   nsfw: boolean;
-}
+};
 
 type CoverImage = {
   tiny?: string;
@@ -75,23 +75,23 @@ type CoverImage = {
   small?: string;
   original: string;
   meta: Meta;
-}
+};
 
 type Meta = {
   dimensions: Dimensions;
-}
+};
 
 type Dimensions = {
   tiny: Large;
   large: Large;
   small: Large;
   medium?: Large;
-}
+};
 
 type Large = {
   width: number | null;
   height: number | null;
-}
+};
 
 type PosterImage = {
   tiny?: string;
@@ -100,25 +100,25 @@ type PosterImage = {
   medium?: string;
   original: string;
   meta: Meta;
-}
+};
 
 // Keyed by locale (en, en_jp, ja_jp, ...); which locales are present varies per title.
 type Titles = {
   [locale: string]: string | null | undefined;
-}
+};
 
 type AnimeLinks = {
   self: string;
-}
+};
 
 type Relationship = {
   links: RelationshipLinks;
-}
+};
 
 type RelationshipLinks = {
   self: string;
   related: string;
-}
+};
 
 export type Category = {
   id: string;
@@ -127,7 +127,7 @@ export type Category = {
     title: string;
     slug: string;
   };
-}
+};
 
 export type Episode = {
   id: string;
@@ -138,4 +138,21 @@ export type Episode = {
     synopsis: string | null;
     thumbnail: { original?: string } | null;
   };
-}
+};
+
+// A user's own profile, as returned by /api/me
+export type Profile = {
+  id: string;
+  username: string | null;
+  displayName: string;
+  avatarUrl: string | null;
+  bio: string;
+  createdAt: string;
+};
+
+// What anyone can see of a user, as returned by /api/users/[username]
+export type PublicProfile = Omit<Profile, 'id'>;
+
+export type ProfileChanges = Partial<
+  Pick<Profile, 'displayName' | 'bio'> & { username: string }
+>;
