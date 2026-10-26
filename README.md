@@ -11,6 +11,7 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 - **Accounts** — Sign up, sign in and sign out from the header (Clerk)
 - **Profile** (`/profile`) — Your own profile: edit display name, username and bio
 - **Public profile** (`/users/[username]`) — Anyone's profile, read-only, visible without signing in
+- **Share profile** — A Share profile button on both profile pages opens the device's share sheet, or copies the public profile link where there is none
 - **Theme** — Light/dark mode (toggle in the header; preference stored in `localStorage`, with system preference as default)
 
 ## Stack

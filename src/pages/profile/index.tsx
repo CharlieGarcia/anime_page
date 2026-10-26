@@ -7,6 +7,7 @@ import { Layout } from '@/components/layout';
 import LoadingSpinner from '@/components/loadingSpinner';
 import ProfileForm from '@/components/profile/ProfileForm';
 import ProfileSummary from '@/components/profile/ProfileSummary';
+import ShareProfileButton from '@/components/profile/ShareProfileButton';
 import { meQuery } from '@/helpers/apiQueries';
 
 const OwnProfile = () => {
@@ -19,13 +20,17 @@ const OwnProfile = () => {
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       <ProfileSummary profile={profile} />
       {profile.username ? (
-        <Box>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
           <Button
             component={Link}
             href={`/users/${profile.username}`}
             variant="outlined">
             View public profile
           </Button>
+          <ShareProfileButton
+            username={profile.username}
+            displayName={profile.displayName}
+          />
         </Box>
       ) : (
         <Alert severity="info">
