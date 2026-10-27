@@ -1,10 +1,11 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
-import { Alert, Typography } from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
 import { Layout } from '@/components/layout';
 import LoadingSpinner from '@/components/loadingSpinner';
 import ProfileSummary from '@/components/profile/ProfileSummary';
+import ShareProfileButton from '@/components/profile/ShareProfileButton';
 import { ApiError, userQuery } from '@/helpers/apiQueries';
 
 type PublicProfileProps = {
@@ -27,7 +28,17 @@ const PublicProfile = ({ username }: PublicProfileProps) => {
   if (error) return <Alert severity="error">{error.message}</Alert>;
   if (!profile) return <LoadingSpinner />;
 
-  return <ProfileSummary profile={profile} />;
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <ProfileSummary profile={profile} />
+      {profile.username && (
+        <ShareProfileButton
+          username={profile.username}
+          displayName={profile.displayName}
+        />
+      )}
+    </Box>
+  );
 };
 
 const PublicProfilePage = () => {
