@@ -10,7 +10,7 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 - **Related** (`/related/[slug]`) — Anime sharing a category/genre slug, with infinite scroll
 - **Accounts** — Sign up, sign in and sign out from the header (Clerk)
 - **Profile** (`/profile`) — Your own profile: edit display name, username and bio
-- **Public profile** (`/users/[username]`) — Anyone's profile, read-only, visible without signing in
+- **Public profile** (`/users/[username]`) — Anyone's profile, read-only, visible without signing in. Rendered on the server on each request, with Open Graph and Twitter tags so a shared link shows a preview card (name, bio, avatar)
 - **Share profile** — A Share profile button on both profile pages opens the device's share sheet, or copies the public profile link where there is none
 - **Theme** — Light/dark mode (toggle in the header; preference stored in `localStorage`, with system preference as default)
 
@@ -66,7 +66,15 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
    bun run db:migrate
    ```
 
-5. Start the dev server and open [http://localhost:3000](http://localhost:3000):
+5. In production, set the site's public address. Public profile pages use it for the absolute `og:url` in their link-preview tags. It is read on each request, so it does not need to be set at build time:
+
+   ```bash
+   SITE_URL=https://your-domain.example
+   ```
+
+   Without it (local development) the address the request came in on is used.
+
+6. Start the dev server and open [http://localhost:3000](http://localhost:3000):
 
    ```bash
    bun run dev
@@ -117,29 +125,31 @@ A GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint, typecheck, uni
 
 ## Project layout
 
-| Path                              | Role                                                                                                                    |
-| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `src/pages/`                      | Routes: `index` (home), `search`, `details/[id]`, `related/[slug]`, `profile`, `users/[username]`                       |
-| `src/pages/_app.tsx`              | App shell: MUI theme and colour schemes, TanStack Query provider, global styles                                         |
-| `src/pages/_document.tsx`         | HTML document: server-side MUI styles and the script that applies the saved colour mode                                 |
-| `src/components/`                 | Layout, header, footer, anime cards and grid, pagination, theme toggle                                                  |
-| `src/components/search/`          | Search form and its inputs                                                                                              |
-| `src/components/authControls.tsx` | Sign in / Sign up buttons and the account menu in the header                                                            |
-| `src/components/profile/`         | Profile summary and the edit form                                                                                       |
-| `src/helpers/apiQueries.ts`       | TanStack Query options and calls for this app's own `/api` routes                                                       |
-| `src/proxy.ts`                    | Clerk middleware; runs on API routes only, so static pages stay cached                                                  |
-| `src/pages/api/`                  | API routes: thin handlers that check the user and call `src/server/`                                                    |
-| `src/server/`                     | Server-only logic: `auth.ts` (who is calling), `users.ts` (profile rules), `http.ts` (route helper and error responses) |
-| `src/server/db/`                  | Drizzle client and `schema.ts` (the tables)                                                                             |
-| `drizzle/`                        | Generated SQL migrations                                                                                                |
-| `src/helpers/request.ts`          | `kitsuGet`, the `fetch` wrapper for the Kitsu API, and `KitsuRequestError`                                              |
-| `src/helpers/queries.ts`          | TanStack Query options for every Kitsu request (trending, details, episodes, search...)                                 |
-| `src/helpers/queryClient.ts`      | Creates the `QueryClient` and sets the 3000 ms cache time                                                               |
-| `src/hooks/`                      | `useInfiniteScroll`, used by the details and related pages                                                              |
-| `src/constants.ts`                | Search filter options, page size, revalidation times                                                                    |
-| `src/types.ts`                    | Types for Kitsu API responses and search fields                                                                         |
-| `e2e/`                            | Playwright smoke test                                                                                                   |
-| `public/`                         | Static assets                                                                                                           |
+| Path                              | Role                                                                                                                                                                 |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/pages/`                      | Routes: `index` (home), `search`, `details/[id]`, `related/[slug]`, `profile`, `users/[username]`                                                                    |
+| `src/pages/_app.tsx`              | App shell: MUI theme and colour schemes, TanStack Query provider, global styles                                                                                      |
+| `src/pages/_document.tsx`         | HTML document: server-side MUI styles and the script that applies the saved colour mode                                                                              |
+| `src/components/`                 | Layout, header, footer, anime cards and grid, pagination, theme toggle                                                                                               |
+| `src/components/search/`          | Search form and its inputs                                                                                                                                           |
+| `src/components/authControls.tsx` | Sign in / Sign up buttons and the account menu in the header                                                                                                         |
+| `src/components/profile/`         | Profile summary and the edit form                                                                                                                                    |
+| `src/helpers/apiQueries.ts`       | TanStack Query options and calls for this app's own `/api` routes                                                                                                    |
+| `src/proxy.ts`                    | Clerk middleware; runs on API routes only, so static pages stay cached                                                                                               |
+| `src/pages/api/`                  | API routes: thin handlers that check the user and call `src/server/`                                                                                                 |
+| `src/server/`                     | Server-only logic: `auth.ts` (who is calling), `users.ts` (profile rules), `http.ts` (route helper and error responses), `siteOrigin.ts` (the site's public address) |
+| `src/helpers/profileMeta.ts`      | Title, description and image for a public profile's link-preview tags                                                                                                |
+| `src/server/db/`                  | Drizzle client and `schema.ts` (the tables)                                                                                                                          |
+| `drizzle/`                        | Generated SQL migrations                                                                                                                                             |
+| `src/helpers/request.ts`          | `kitsuGet`, the `fetch` wrapper for the Kitsu API, and `KitsuRequestError`                                                                                           |
+| `src/helpers/queries.ts`          | TanStack Query options for every Kitsu request (trending, details, episodes, search...)                                                                              |
+| `src/helpers/queryClient.ts`      | Creates the `QueryClient` and sets the 3000 ms cache time                                                                                                            |
+| `src/hooks/`                      | `useInfiniteScroll`, used by the details and related pages                                                                                                           |
+| `src/constants.ts`                | Search filter options, page size, revalidation times                                                                                                                 |
+| `src/types.ts`                    | Types for Kitsu API responses and search fields                                                                                                                      |
+| `src/__tests__/pages/`            | Unit tests for page data loading (kept out of `src/pages/`, where every file is a route)                                                                             |
+| `e2e/`                            | Playwright smoke test                                                                                                                                                |
+| `public/`                         | Static assets                                                                                                                                                        |
 
 Imports use the `@/` alias for `src/` (for example `@/helpers/queries`). Unit tests sit next to the code they cover as `*.test.ts(x)`; keep them out of `src/pages/`, where every file becomes a route.
 
