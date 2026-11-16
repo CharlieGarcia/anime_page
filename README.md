@@ -12,6 +12,7 @@ A [Next.js](https://nextjs.org/) web app for browsing anime. It uses the [Kitsu 
 - **Profile** (`/profile`) — Your own profile: edit display name, username and bio
 - **Public profile** (`/users/[username]`) — Anyone's profile, read-only, visible without signing in. Rendered on the server on each request, with Open Graph and Twitter tags so a shared link shows a preview card (name, bio, avatar)
 - **Watch list** — Add an anime from its details page or with the bookmark button on any anime card (signed-out visitors are asked to sign in). Your watch list on `/profile`, newest first: remove anime from it, and choose whether it shows on your public profile (it does by default). Your public profile shows it read-only to anyone, or says it's private
+- **Top 10 anime** — On `/profile`, pick up to 10 favourite anime with an "Add anime" search box and put them in order with Move up, Move down and Remove. Changes stay local until Save; Cancel discards them. Choose whether the list shows on your public profile (it does by default). Your public profile shows it ranked and read-only to anyone, or says it's private
 - **Share profile** — A Share profile button on both profile pages opens the device's share sheet, or copies the public profile link where there is none
 - **Theme** — Light/dark mode (toggle in the header; preference stored in `localStorage`, with system preference as default)
 

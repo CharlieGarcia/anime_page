@@ -8,6 +8,8 @@ import LoadingSpinner from '@/components/loadingSpinner';
 import ProfileForm from '@/components/profile/ProfileForm';
 import ProfileSummary from '@/components/profile/ProfileSummary';
 import ShareProfileButton from '@/components/profile/ShareProfileButton';
+import TopAnimeEditor from '@/components/topAnime/TopAnimeEditor';
+import TopAnimePrivacySwitch from '@/components/topAnime/TopAnimePrivacySwitch';
 import OwnWatchList from '@/components/watchList/OwnWatchList';
 import WatchListPrivacySwitch from '@/components/watchList/WatchListPrivacySwitch';
 import { meQuery } from '@/helpers/apiQueries';
@@ -39,6 +41,15 @@ const OwnProfile = () => {
           Choose a username to get a public profile page.
         </Alert>
       )}
+      <Box component="section">
+        <Typography variant="h5" component="h2" sx={{ marginBottom: '8px' }}>
+          Top 10 anime
+        </Typography>
+        <TopAnimePrivacySwitch />
+        <Box sx={{ marginTop: '16px' }}>
+          <TopAnimeEditor />
+        </Box>
+      </Box>
       <Box component="section">
         <Typography variant="h5" component="h2" sx={{ marginBottom: '8px' }}>
           Watch list

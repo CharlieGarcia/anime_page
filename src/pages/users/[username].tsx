@@ -11,12 +11,19 @@ import { Layout } from '@/components/layout';
 import LoadingSpinner from '@/components/loadingSpinner';
 import ProfileSummary from '@/components/profile/ProfileSummary';
 import ShareProfileButton from '@/components/profile/ShareProfileButton';
+import PublicTopAnime from '@/components/topAnime/PublicTopAnime';
 import PublicWatchList from '@/components/watchList/PublicWatchList';
-import { ApiError, userQuery, userWatchListQuery } from '@/helpers/apiQueries';
+import {
+  ApiError,
+  userQuery,
+  userTopAnimeQuery,
+  userWatchListQuery
+} from '@/helpers/apiQueries';
 import { profileMeta } from '@/helpers/profileMeta';
 import { makeQueryClient } from '@/helpers/queryClient';
 import { getDb } from '@/server/db/client';
 import { siteOrigin } from '@/server/siteOrigin';
+import { getTopAnime } from '@/server/topAnime';
 import { getUserByUsername, toPublicProfile } from '@/server/users';
 import { getWatchList } from '@/server/watchList';
 import type {
@@ -91,6 +98,15 @@ const PublicProfile = ({ username, url }: PublicProfilePageProps) => {
       )}
       <Box component="section">
         <Typography variant="h5" component="h2" sx={{ marginBottom: '16px' }}>
+          Top 10 anime
+        </Typography>
+        <PublicTopAnime
+          username={profile.username ?? username}
+          topAnimePublic={profile.topAnimePublic}
+        />
+      </Box>
+      <Box component="section">
+        <Typography variant="h5" component="h2" sx={{ marginBottom: '16px' }}>
           Watch list
         </Typography>
         <PublicWatchList
@@ -140,6 +156,13 @@ export const getServerSideProps: GetServerSideProps<
       (item) => ({ ...item, addedAt: item.addedAt.toISOString() })
     );
     queryClient.setQueryData(userWatchListQuery(username).queryKey, items);
+  }
+  if (user.topAnimePublic) {
+    // Same shape as GET /api/users/[username]/top-anime returns
+    queryClient.setQueryData(
+      userTopAnimeQuery(username).queryKey,
+      await getTopAnime(getDb(), user.id)
+    );
   }
 
   return {

@@ -4,11 +4,13 @@ import {
   skipToken
 } from '@tanstack/react-query';
 import _kebabCase from 'lodash/kebabCase';
+import { animeSnapshot } from './animeSnapshot';
 import { kitsuGet, formatGenres } from './request';
 import { ITEMS_PER_PAGE } from '@/constants';
 import { Anime, Category, Episode, Genres, SearchFieldsType } from '@/types';
 
 export const TRENDING_LIMIT = 12;
+export const TITLE_SEARCH_LIMIT = 5;
 export const EPISODES_PER_PAGE = 13;
 export const RELATED_PER_PAGE = 13;
 
@@ -164,4 +166,23 @@ export const genresQuery = () =>
       const response = await kitsuGet<JsonApiResponse<Genres[]>>('/genres');
       return formatGenres(response.data);
     }
+  });
+
+// A few anime whose title matches the text, for a search-as-you-type box. Nothing is
+// requested for empty text.
+export const animeTitleSearchQuery = (text: string) =>
+  queryOptions({
+    queryKey: ['anime', 'title-search', text],
+    queryFn: text
+      ? async () => {
+          const response = await kitsuGet<JsonApiResponse<Anime[]>>('/anime', {
+            'filter[text]': text,
+            'page[limit]': TITLE_SEARCH_LIMIT
+          });
+          return response.data.map((anime) => ({
+            animeId: anime.id,
+            ...animeSnapshot(anime.attributes)
+          }));
+        }
+      : skipToken
   });
