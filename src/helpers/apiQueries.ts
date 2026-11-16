@@ -3,6 +3,7 @@ import {
   queryOptions,
   type QueryClient
 } from '@tanstack/react-query';
+import type { AnimeSnapshot } from './animeSnapshot';
 import { Profile, ProfileChanges, PublicProfile, WatchListItem } from '@/types';
 
 // A failed call to our own API. fieldErrors maps a form field to its message.
@@ -86,16 +87,65 @@ export const userWatchListQuery = (username: string) =>
     retry: noRetryOnClientError
   });
 
+// Shared by the add and remove mutations, so each can tell when the other is in flight
+const WATCH_LIST_MUTATION_KEY = ['me', 'watch-list'];
+
+// Refetch the list once the last add or remove in flight settles. Refetching after an
+// earlier one would briefly undo the optimistic changes of the others.
+function refetchWatchListWhenIdle(queryClient: QueryClient) {
+  if (queryClient.isMutating({ mutationKey: WATCH_LIST_MUTATION_KEY }) === 1) {
+    return queryClient.invalidateQueries({
+      queryKey: myWatchListQuery().queryKey
+    });
+  }
+}
+
+// The anime to add: its Kitsu id and what the details page or card already shows
+export type WatchListAnime = AnimeSnapshot & { animeId: string };
+
+// Puts the anime at the top of the signed-in user's list straight away, and takes it
+// off again if the server says no. The server stores its own snapshot from Kitsu;
+// the refetch afterwards replaces this one with it.
+export const addToWatchListMutation = (queryClient: QueryClient) => {
+  const { queryKey } = myWatchListQuery();
+
+  return mutationOptions({
+    mutationKey: [...WATCH_LIST_MUTATION_KEY, 'add'],
+    mutationFn: (anime: WatchListAnime) =>
+      api<WatchListItem>('/api/me/watch-list', {
+        method: 'POST',
+        body: JSON.stringify({ animeId: anime.animeId })
+      }),
+    onMutate: async (anime) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData(queryKey);
+      const item: WatchListItem = {
+        ...anime,
+        status: 'planned',
+        addedAt: new Date().toISOString()
+      };
+      queryClient.setQueryData(queryKey, (items) =>
+        items && !items.some((entry) => entry.animeId === anime.animeId)
+          ? [item, ...items]
+          : items
+      );
+      return { previous };
+    },
+    onError: (_error, _anime, context) => {
+      queryClient.setQueryData(queryKey, context?.previous);
+    },
+    onSettled: () => refetchWatchListWhenIdle(queryClient)
+  });
+};
+
 // Takes the anime off the signed-in user's list straight away, and puts it back
 // if the server says no
 export const removeFromWatchListMutation = (queryClient: QueryClient) => {
   const { queryKey } = myWatchListQuery();
 
-  const mutationKey = ['me', 'watch-list', 'remove'];
-
   return mutationOptions({
-    mutationKey,
-    mutationFn: (item: WatchListItem) =>
+    mutationKey: [...WATCH_LIST_MUTATION_KEY, 'remove'],
+    mutationFn: (item: Pick<WatchListItem, 'animeId' | 'title'>) =>
       api<null>(`/api/me/watch-list/${encodeURIComponent(item.animeId)}`, {
         method: 'DELETE'
       }),
@@ -111,12 +161,6 @@ export const removeFromWatchListMutation = (queryClient: QueryClient) => {
     onError: (_error, _item, context) => {
       queryClient.setQueryData(queryKey, context?.previous);
     },
-    onSettled: () => {
-      // With several removes in flight, refetching after the first would bring the
-      // others back for a moment; refetch once, after the last
-      if (queryClient.isMutating({ mutationKey }) === 1) {
-        return queryClient.invalidateQueries({ queryKey });
-      }
-    }
+    onSettled: () => refetchWatchListWhenIdle(queryClient)
   });
 };
