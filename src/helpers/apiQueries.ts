@@ -11,6 +11,7 @@ import {
   TopAnimeItem,
   WatchListItem
 } from '@/types';
+import { TOP_ANIME_MAX } from '@/constants';
 
 // A failed call to our own API. fieldErrors maps a form field to its message.
 export class ApiError extends Error {
@@ -226,5 +227,87 @@ export const saveTopAnimeMutation = (queryClient: QueryClient) => {
         });
       }
     }
+  });
+};
+
+// Refetch the top 10 once the last add or remove in flight settles. Refetching after an
+// earlier one would briefly undo the optimistic changes of the others. A save counts as
+// in flight too, so a refetch can't land in the middle of it.
+function refetchTopAnimeWhenIdle(queryClient: QueryClient) {
+  if (queryClient.isMutating({ mutationKey: TOP_ANIME_MUTATION_KEY }) !== 1) {
+    return;
+  }
+  // The public profile shows the same list
+  const username = queryClient.getQueryData(meQuery().queryKey)?.username;
+  return Promise.all([
+    queryClient.invalidateQueries({ queryKey: myTopAnimeQuery().queryKey }),
+    username &&
+      queryClient.invalidateQueries({
+        queryKey: userTopAnimeQuery(username).queryKey
+      })
+  ]);
+}
+
+// The anime to add: its Kitsu id and what the details page already shows
+export type TopAnimeAnime = AnimeSnapshot & { animeId: string };
+
+// Puts the anime last in the signed-in user's top 10 straight away, and takes it off
+// again if the server says no (for example 409 when the list is full). The server
+// stores its own snapshot from Kitsu; the refetch afterwards replaces this one with it.
+export const addToTopAnimeMutation = (queryClient: QueryClient) => {
+  const { queryKey } = myTopAnimeQuery();
+
+  return mutationOptions({
+    mutationKey: [...TOP_ANIME_MUTATION_KEY, 'add'],
+    mutationFn: (anime: TopAnimeAnime) =>
+      api<TopAnimeResponse>('/api/me/top-anime', {
+        method: 'POST',
+        body: JSON.stringify({ animeId: anime.animeId })
+      }),
+    onMutate: async (anime) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData(queryKey);
+      queryClient.setQueryData(queryKey, (items) =>
+        items &&
+        items.length < TOP_ANIME_MAX &&
+        !items.some((item) => item.animeId === anime.animeId)
+          ? [...items, { ...anime, rank: items.length + 1 }]
+          : items
+      );
+      return { previous };
+    },
+    onError: (_error, _anime, context) => {
+      queryClient.setQueryData(queryKey, context?.previous);
+    },
+    onSettled: () => refetchTopAnimeWhenIdle(queryClient)
+  });
+};
+
+// Takes the anime out of the signed-in user's top 10 straight away, moving the ones
+// ranked below it up one as the server does, and puts it back if the server says no
+export const removeFromTopAnimeMutation = (queryClient: QueryClient) => {
+  const { queryKey } = myTopAnimeQuery();
+
+  return mutationOptions({
+    mutationKey: [...TOP_ANIME_MUTATION_KEY, 'remove'],
+    mutationFn: (anime: Pick<TopAnimeItem, 'animeId' | 'title'>) =>
+      api<null>(`/api/me/top-anime/${encodeURIComponent(anime.animeId)}`, {
+        method: 'DELETE'
+      }),
+    onMutate: async (anime) => {
+      // A refetch already on its way would bring the anime back
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData(queryKey);
+      queryClient.setQueryData(queryKey, (items) =>
+        items
+          ?.filter((item) => item.animeId !== anime.animeId)
+          .map((item, index) => ({ ...item, rank: index + 1 }))
+      );
+      return { previous };
+    },
+    onError: (_error, _anime, context) => {
+      queryClient.setQueryData(queryKey, context?.previous);
+    },
+    onSettled: () => refetchTopAnimeWhenIdle(queryClient)
   });
 };
