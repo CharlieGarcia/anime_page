@@ -7,6 +7,7 @@ import Image from '@/components/image';
 import Accordion from '@/components/accordion';
 import { Layout } from '@/components/layout';
 import LoadingSpinner from '@/components/loadingSpinner';
+import TopAnimeButton from '@/components/topAnime/TopAnimeButton';
 import WatchListButton from '@/components/watchList/WatchListButton';
 import { animeSnapshot } from '@/helpers/animeSnapshot';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
@@ -65,6 +66,7 @@ function Detail({ id }: DetailProps) {
     );
   }
 
+  const anime = { animeId: id, ...animeSnapshot(info.attributes) };
   const coverImage = info.attributes?.coverImage;
   const coverSize = coverImage?.meta?.dimensions?.large;
   // Kitsu covers are 3360x800 unless the API says otherwise
@@ -81,10 +83,15 @@ function Detail({ id }: DetailProps) {
       <Typography variant="body1" component="p" color="text.secondary">
         {` (${totalEpisodes} episodes)`}
       </Typography>
-      <Box sx={{ marginY: '16px' }}>
-        <WatchListButton
-          anime={{ animeId: id, ...animeSnapshot(info.attributes) }}
-        />
+      <Box
+        sx={{
+          marginY: '16px',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '16px'
+        }}>
+        <WatchListButton anime={anime} />
+        <TopAnimeButton anime={anime} />
       </Box>
       <Box>
         {coverImage?.large && (
