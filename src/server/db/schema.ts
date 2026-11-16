@@ -1,4 +1,11 @@
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  index,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp
+} from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   // The Clerk user id; Clerk owns credentials and sessions
@@ -8,10 +15,45 @@ export const users = pgTable('users', {
   displayName: text('display_name').notNull(),
   avatarUrl: text('avatar_url'),
   bio: text('bio').notNull().default(''),
+  // Whether anyone can see this user's watch list on their public profile
+  watchListPublic: boolean('watch_list_public').notNull().default(true),
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow()
 });
 
+// Stored as plain text (checked in watchList.ts) rather than a Postgres enum,
+// so a status can be added later without ALTER TYPE
+export const WATCH_LIST_STATUSES = ['planned', 'watched'] as const;
+export type WatchListStatus = (typeof WATCH_LIST_STATUSES)[number];
+
+// One anime on a user's watch list. The title, poster and subtype are a snapshot
+// taken from Kitsu when it was added, so lists render without calling Kitsu.
+export const watchListItems = pgTable(
+  'watch_list_items',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    // The Kitsu anime id
+    animeId: text('anime_id').notNull(),
+    status: text('status')
+      .$type<WatchListStatus>()
+      .notNull()
+      .default('planned'),
+    title: text('title').notNull(),
+    posterUrl: text('poster_url'),
+    subtype: text('subtype'),
+    addedAt: timestamp('added_at', { withTimezone: true })
+      .notNull()
+      .defaultNow()
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.animeId] }),
+    index('watch_list_items_user_added_idx').on(table.userId, table.addedAt)
+  ]
+);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
+export type WatchListItemRow = typeof watchListItems.$inferSelect;

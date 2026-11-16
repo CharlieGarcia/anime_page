@@ -124,6 +124,26 @@ describe('updateProfile', () => {
     });
   });
 
+  it('makes the watch list private and public again, public by default', async () => {
+    expect((await getUser(db, 'user_1'))?.watchListPublic).toBe(true);
+
+    const hidden = await updateProfile(db, 'user_1', {
+      watchListPublic: false
+    });
+    expect(hidden.watchListPublic).toBe(false);
+
+    const shown = await updateProfile(db, 'user_1', { watchListPublic: true });
+    expect(shown.watchListPublic).toBe(true);
+  });
+
+  it('rejects a watch list setting that is not a boolean', async () => {
+    const error = await updateError('user_1', { watchListPublic: 'no' });
+
+    expect(error.status).toBe(400);
+    expect(error.fieldErrors?.watchListPublic).toBeTruthy();
+    expect((await getUser(db, 'user_1'))?.watchListPublic).toBe(true);
+  });
+
   it.each([
     ['too short', 'ab'],
     ['too long', 'a'.repeat(21)],
@@ -212,7 +232,8 @@ describe('toPublicProfile', () => {
       'bio',
       'createdAt',
       'displayName',
-      'username'
+      'username',
+      'watchListPublic'
     ]);
   });
 });

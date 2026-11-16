@@ -15,7 +15,8 @@ export class KitsuRequestError extends Error {
 
 export async function kitsuGet<T>(
   endPoint: string,
-  params: Record<string, string | number> = {}
+  params: Record<string, string | number> = {},
+  init: RequestInit = {}
 ): Promise<T> {
   const query = new URLSearchParams(
     Object.entries(params).map(([key, value]) => [key, String(value)])
@@ -24,6 +25,7 @@ export async function kitsuGet<T>(
   const response = await fetch(
     `${API_ENDPOINT}${endPoint}${query ? `?${query}` : ''}`,
     {
+      ...init,
       headers: {
         Accept: 'application/vnd.api+json'
       }

@@ -13,7 +13,12 @@ export type NewUserProfile = {
 // The part of a user anyone may see
 export type PublicProfile = Pick<
   User,
-  'username' | 'displayName' | 'avatarUrl' | 'bio' | 'createdAt'
+  | 'username'
+  | 'displayName'
+  | 'avatarUrl'
+  | 'bio'
+  | 'watchListPublic'
+  | 'createdAt'
 >;
 
 export const DISPLAY_NAME_MAX = 50;
@@ -35,7 +40,8 @@ const profileUpdateSchema = z
         /^[a-z0-9_]{3,20}$/,
         'Use 3 to 20 letters, numbers or underscores'
       ),
-    bio: z.string().trim().max(BIO_MAX, `Use ${BIO_MAX} characters or fewer`)
+    bio: z.string().trim().max(BIO_MAX, `Use ${BIO_MAX} characters or fewer`),
+    watchListPublic: z.boolean({ error: 'Choose true or false' })
   })
   .partial();
 
@@ -50,8 +56,9 @@ function isUniqueViolation(error: unknown): boolean {
 }
 
 export function toPublicProfile(user: User): PublicProfile {
-  const { username, displayName, avatarUrl, bio, createdAt } = user;
-  return { username, displayName, avatarUrl, bio, createdAt };
+  const { username, displayName, avatarUrl, bio, watchListPublic, createdAt } =
+    user;
+  return { username, displayName, avatarUrl, bio, watchListPublic, createdAt };
 }
 
 export async function getUser(db: Database, id: string): Promise<User | null> {

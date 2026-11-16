@@ -8,7 +8,7 @@ export default route({
   GET: async (req, res) => {
     res.status(200).json(await requireUser(req));
   },
-  // Edit display name, username and bio
+  // Edit display name, username, bio and whether the watch list is public
   PATCH: async (req, res) => {
     const user = await requireUser(req);
     res.status(200).json(await updateProfile(getDb(), user.id, req.body));
