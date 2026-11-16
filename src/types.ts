@@ -147,6 +147,7 @@ export type Profile = {
   displayName: string;
   avatarUrl: string | null;
   bio: string;
+  watchListPublic: boolean;
   createdAt: string;
 };
 
@@ -154,5 +155,17 @@ export type Profile = {
 export type PublicProfile = Omit<Profile, 'id'>;
 
 export type ProfileChanges = Partial<
-  Pick<Profile, 'displayName' | 'bio'> & { username: string }
+  Pick<Profile, 'displayName' | 'bio' | 'watchListPublic'> & {
+    username: string;
+  }
 >;
+
+// One anime on a watch list, as returned by the watch list routes
+export type WatchListItem = {
+  animeId: string;
+  status: 'planned' | 'watched';
+  title: string;
+  posterUrl: string | null;
+  subtype: string | null;
+  addedAt: string;
+};

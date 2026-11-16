@@ -17,6 +17,7 @@ const profile: Profile = {
   displayName: 'Spike Spiegel',
   avatarUrl: null,
   bio: '',
+  watchListPublic: true,
   createdAt: '2026-10-11T00:00:00.000Z'
 };
 

@@ -55,6 +55,7 @@ describe('getServerSideProps for /users/[username]', () => {
       displayName: 'Spike Spiegel',
       avatarUrl: 'https://img.clerk.com/spike',
       bio: 'Bounty hunter',
+      watchListPublic: true,
       createdAt: expect.any(String)
     });
     // Next.js only accepts props that survive JSON
