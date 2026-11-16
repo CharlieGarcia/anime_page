@@ -144,6 +144,27 @@ describe('updateProfile', () => {
     expect((await getUser(db, 'user_1'))?.watchListPublic).toBe(true);
   });
 
+  it('makes the top 10 private and public again, public by default', async () => {
+    expect((await getUser(db, 'user_1'))?.topAnimePublic).toBe(true);
+
+    const hidden = await updateProfile(db, 'user_1', {
+      topAnimePublic: false
+    });
+    expect(hidden.topAnimePublic).toBe(false);
+    expect(hidden.watchListPublic).toBe(true);
+
+    const shown = await updateProfile(db, 'user_1', { topAnimePublic: true });
+    expect(shown.topAnimePublic).toBe(true);
+  });
+
+  it('rejects a top 10 setting that is not a boolean', async () => {
+    const error = await updateError('user_1', { topAnimePublic: 'no' });
+
+    expect(error.status).toBe(400);
+    expect(error.fieldErrors?.topAnimePublic).toBeTruthy();
+    expect((await getUser(db, 'user_1'))?.topAnimePublic).toBe(true);
+  });
+
   it.each([
     ['too short', 'ab'],
     ['too long', 'a'.repeat(21)],
@@ -232,6 +253,7 @@ describe('toPublicProfile', () => {
       'bio',
       'createdAt',
       'displayName',
+      'topAnimePublic',
       'username',
       'watchListPublic'
     ]);

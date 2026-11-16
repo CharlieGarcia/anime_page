@@ -148,6 +148,7 @@ export type Profile = {
   avatarUrl: string | null;
   bio: string;
   watchListPublic: boolean;
+  topAnimePublic: boolean;
   createdAt: string;
 };
 
@@ -155,7 +156,10 @@ export type Profile = {
 export type PublicProfile = Omit<Profile, 'id'>;
 
 export type ProfileChanges = Partial<
-  Pick<Profile, 'displayName' | 'bio' | 'watchListPublic'> & {
+  Pick<
+    Profile,
+    'displayName' | 'bio' | 'watchListPublic' | 'topAnimePublic'
+  > & {
     username: string;
   }
 >;
@@ -168,4 +172,13 @@ export type WatchListItem = {
   posterUrl: string | null;
   subtype: string | null;
   addedAt: string;
+};
+
+// One rank of a user's top 10, as returned by the top 10 routes. Rank 1 is the favourite.
+export type TopAnimeItem = {
+  rank: number;
+  animeId: string;
+  title: string;
+  posterUrl: string | null;
+  subtype: string | null;
 };

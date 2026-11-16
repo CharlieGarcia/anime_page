@@ -15,6 +15,13 @@
       "when": 1794799318835,
       "tag": "0001_watch_list",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794803274218,
+      "tag": "0002_top_anime",
+      "breakpoints": true
     }
   ]
 }

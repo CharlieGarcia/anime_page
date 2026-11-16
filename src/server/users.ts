@@ -18,6 +18,7 @@ export type PublicProfile = Pick<
   | 'avatarUrl'
   | 'bio'
   | 'watchListPublic'
+  | 'topAnimePublic'
   | 'createdAt'
 >;
 
@@ -41,7 +42,8 @@ const profileUpdateSchema = z
         'Use 3 to 20 letters, numbers or underscores'
       ),
     bio: z.string().trim().max(BIO_MAX, `Use ${BIO_MAX} characters or fewer`),
-    watchListPublic: z.boolean({ error: 'Choose true or false' })
+    watchListPublic: z.boolean({ error: 'Choose true or false' }),
+    topAnimePublic: z.boolean({ error: 'Choose true or false' })
   })
   .partial();
 
@@ -56,9 +58,24 @@ function isUniqueViolation(error: unknown): boolean {
 }
 
 export function toPublicProfile(user: User): PublicProfile {
-  const { username, displayName, avatarUrl, bio, watchListPublic, createdAt } =
-    user;
-  return { username, displayName, avatarUrl, bio, watchListPublic, createdAt };
+  const {
+    username,
+    displayName,
+    avatarUrl,
+    bio,
+    watchListPublic,
+    topAnimePublic,
+    createdAt
+  } = user;
+  return {
+    username,
+    displayName,
+    avatarUrl,
+    bio,
+    watchListPublic,
+    topAnimePublic,
+    createdAt
+  };
 }
 
 export async function getUser(db: Database, id: string): Promise<User | null> {

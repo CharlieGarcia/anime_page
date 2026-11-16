@@ -39,6 +39,7 @@ const me: Profile = {
   avatarUrl: null,
   bio: '',
   watchListPublic: true,
+  topAnimePublic: true,
   createdAt: '2026-10-11T00:00:00.000Z'
 };
 
