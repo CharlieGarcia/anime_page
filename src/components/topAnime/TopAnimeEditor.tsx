@@ -54,7 +54,7 @@ const TopAnimeEditor = () => {
   const saveButton = useRef<HTMLButtonElement>(null);
   const focusTarget = useRef<FocusTarget | null>(null);
 
-  // A draft with no changes in it follows the saved list, so additions from elsewhere
+  // With no unsaved changes the editor shows the saved list, so additions from elsewhere
   // on the page (such as a details page button) show up straight away
   const hasChanges = Boolean(draft && saved && !sameOrder(draft, saved));
   const items = hasChanges ? draft! : (saved ?? []);
@@ -68,7 +68,8 @@ const TopAnimeEditor = () => {
     focusTarget.current = null;
 
     if ('to' in target) {
-      if (target.to === 'save') return saveButton.current?.focus();
+      const save = saveButton.current;
+      if (target.to === 'save' && save && !save.disabled) return save.focus();
       const search = searchInput.current;
       if (target.to === 'search' || (search && !search.disabled)) {
         return search?.focus();
@@ -95,7 +96,8 @@ const TopAnimeEditor = () => {
     };
 
   const change = (next: PosterAnime[], message: string) => {
-    setDraft(next);
+    // An edit that ends up back at the saved order leaves nothing to save
+    setDraft(saved && sameOrder(next, saved) ? null : next);
     setAnnouncement(message);
     save.reset();
   };

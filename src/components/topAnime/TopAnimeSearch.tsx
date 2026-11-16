@@ -57,8 +57,9 @@ const TopAnimeSearch = ({
         if (anime) onAdd(anime);
       }}
       inputValue={text}
+      // Empty again once an anime is picked, ready for the next
       onInputChange={(_event, value, reason) =>
-        setText(reason === 'reset' ? '' : value)
+        setText(reason === 'input' ? value : '')
       }
       disabled={full}
       loading={waiting}
