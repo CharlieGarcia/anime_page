@@ -8,14 +8,10 @@ import {
   type WatchListItemRow
 } from './db/schema';
 import { HttpError } from './errors';
+import type { AnimeSnapshot } from '@/helpers/animeSnapshot';
 import { getUserByUsername } from './users';
 
-// What we copy from Kitsu when an anime is added
-export type AnimeSnapshot = {
-  title: string;
-  posterUrl: string | null;
-  subtype: string | null;
-};
+export type { AnimeSnapshot };
 
 // Looks an anime up on Kitsu. Returns null when there is no anime with that id,
 // throws when Kitsu can't be reached. The app passes loadAnimeSnapshot from kitsu.ts.

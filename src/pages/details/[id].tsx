@@ -7,6 +7,8 @@ import Image from '@/components/image';
 import Accordion from '@/components/accordion';
 import { Layout } from '@/components/layout';
 import LoadingSpinner from '@/components/loadingSpinner';
+import WatchListButton from '@/components/watchList/WatchListButton';
+import { animeSnapshot } from '@/helpers/animeSnapshot';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { makeQueryClient } from '@/helpers/queryClient';
 import {
@@ -79,6 +81,11 @@ function Detail({ id }: DetailProps) {
       <Typography variant="body1" component="p" color="text.secondary">
         {` (${totalEpisodes} episodes)`}
       </Typography>
+      <Box sx={{ marginY: '16px' }}>
+        <WatchListButton
+          anime={{ animeId: id, ...animeSnapshot(info.attributes) }}
+        />
+      </Box>
       <Box>
         {coverImage?.large && (
           <Image
