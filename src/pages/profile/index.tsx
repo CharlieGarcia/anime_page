@@ -8,6 +8,8 @@ import LoadingSpinner from '@/components/loadingSpinner';
 import ProfileForm from '@/components/profile/ProfileForm';
 import ProfileSummary from '@/components/profile/ProfileSummary';
 import ShareProfileButton from '@/components/profile/ShareProfileButton';
+import OwnWatchList from '@/components/watchList/OwnWatchList';
+import WatchListPrivacySwitch from '@/components/watchList/WatchListPrivacySwitch';
 import { meQuery } from '@/helpers/apiQueries';
 
 const OwnProfile = () => {
@@ -37,6 +39,15 @@ const OwnProfile = () => {
           Choose a username to get a public profile page.
         </Alert>
       )}
+      <Box component="section">
+        <Typography variant="h5" component="h2" sx={{ marginBottom: '8px' }}>
+          Watch list
+        </Typography>
+        <WatchListPrivacySwitch />
+        <Box sx={{ marginTop: '16px' }}>
+          <OwnWatchList />
+        </Box>
+      </Box>
       <Box>
         <Typography variant="h5" component="h2" sx={{ marginBottom: '16px' }}>
           Edit profile

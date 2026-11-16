@@ -11,13 +11,18 @@ import { Layout } from '@/components/layout';
 import LoadingSpinner from '@/components/loadingSpinner';
 import ProfileSummary from '@/components/profile/ProfileSummary';
 import ShareProfileButton from '@/components/profile/ShareProfileButton';
-import { ApiError, userQuery } from '@/helpers/apiQueries';
+import PublicWatchList from '@/components/watchList/PublicWatchList';
+import { ApiError, userQuery, userWatchListQuery } from '@/helpers/apiQueries';
 import { profileMeta } from '@/helpers/profileMeta';
 import { makeQueryClient } from '@/helpers/queryClient';
 import { getDb } from '@/server/db/client';
 import { siteOrigin } from '@/server/siteOrigin';
 import { getUserByUsername, toPublicProfile } from '@/server/users';
-import type { PublicProfile as PublicProfileData } from '@/types';
+import { getWatchList } from '@/server/watchList';
+import type {
+  PublicProfile as PublicProfileData,
+  WatchListItem
+} from '@/types';
 
 type PublicProfilePageProps = {
   username: string;
@@ -84,6 +89,15 @@ const PublicProfile = ({ username, url }: PublicProfilePageProps) => {
           displayName={profile.displayName}
         />
       )}
+      <Box component="section">
+        <Typography variant="h5" component="h2" sx={{ marginBottom: '16px' }}>
+          Watch list
+        </Typography>
+        <PublicWatchList
+          username={profile.username ?? username}
+          watchListPublic={profile.watchListPublic}
+        />
+      </Box>
     </Box>
   );
 };
@@ -119,6 +133,14 @@ export const getServerSideProps: GetServerSideProps<
   };
   const queryClient = makeQueryClient();
   queryClient.setQueryData(userQuery(username).queryKey, profile);
+  if (user.watchListPublic) {
+    // Same shape as GET /api/users/[username]/watch-list returns, so the list
+    // is in the first render instead of loading after it
+    const items: WatchListItem[] = (await getWatchList(getDb(), user.id)).map(
+      (item) => ({ ...item, addedAt: item.addedAt.toISOString() })
+    );
+    queryClient.setQueryData(userWatchListQuery(username).queryKey, items);
+  }
 
   return {
     props: {
