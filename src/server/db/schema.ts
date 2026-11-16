@@ -1,10 +1,15 @@
+import { sql } from 'drizzle-orm';
+import { TOP_ANIME_MAX } from '@/constants';
 import {
   boolean,
+  check,
   index,
   pgTable,
   primaryKey,
+  smallint,
   text,
-  timestamp
+  timestamp,
+  unique
 } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
@@ -17,6 +22,8 @@ export const users = pgTable('users', {
   bio: text('bio').notNull().default(''),
   // Whether anyone can see this user's watch list on their public profile
   watchListPublic: boolean('watch_list_public').notNull().default(true),
+  // Whether anyone can see this user's top 10 on their public profile
+  topAnimePublic: boolean('top_anime_public').notNull().default(true),
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow()
@@ -54,6 +61,33 @@ export const watchListItems = pgTable(
   ]
 );
 
+// One rank of a user's top 10. Ranks run from 1 with no gaps (topAnime.ts keeps
+// them that way). The title, poster and subtype are a snapshot taken from Kitsu
+// when the anime was added, so the list renders without calling Kitsu.
+export const topAnime = pgTable(
+  'top_anime',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    rank: smallint('rank').notNull(),
+    // The Kitsu anime id
+    animeId: text('anime_id').notNull(),
+    title: text('title').notNull(),
+    posterUrl: text('poster_url'),
+    subtype: text('subtype')
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.rank] }),
+    unique('top_anime_user_anime_unique').on(table.userId, table.animeId),
+    check(
+      'top_anime_rank_range',
+      sql`${table.rank} BETWEEN 1 AND ${sql.raw(String(TOP_ANIME_MAX))}`
+    )
+  ]
+);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type WatchListItemRow = typeof watchListItems.$inferSelect;
+export type TopAnimeRow = typeof topAnime.$inferSelect;

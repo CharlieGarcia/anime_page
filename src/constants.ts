@@ -53,3 +53,6 @@ export const MODE_STORAGE_KEY = 'theme';
 export const REVALIDATE_SECONDS = 60 * 60;
 // Shorter window used when Kitsu failed during generation, so the page is retried soon
 export const REVALIDATE_AFTER_ERROR_SECONDS = 60;
+
+// The most anime a user's top 10 holds. Shared by the server and the browser.
+export const TOP_ANIME_MAX = 10;
