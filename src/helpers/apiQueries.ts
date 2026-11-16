@@ -4,7 +4,13 @@ import {
   type QueryClient
 } from '@tanstack/react-query';
 import type { AnimeSnapshot } from './animeSnapshot';
-import { Profile, ProfileChanges, PublicProfile, WatchListItem } from '@/types';
+import {
+  Profile,
+  ProfileChanges,
+  PublicProfile,
+  TopAnimeItem,
+  WatchListItem
+} from '@/types';
 
 // A failed call to our own API. fieldErrors maps a form field to its message.
 export class ApiError extends Error {
@@ -162,5 +168,63 @@ export const removeFromWatchListMutation = (queryClient: QueryClient) => {
       queryClient.setQueryData(queryKey, context?.previous);
     },
     onSettled: () => refetchWatchListWhenIdle(queryClient)
+  });
+};
+
+type TopAnimeResponse = { items: TopAnimeItem[] };
+
+// The signed-in user's own top 10, rank 1 first
+export const myTopAnimeQuery = () =>
+  queryOptions({
+    queryKey: ['me', 'top-anime'],
+    queryFn: async () =>
+      (await api<TopAnimeResponse>('/api/me/top-anime')).items,
+    retry: noRetryOnClientError
+  });
+
+// Anyone's top 10, rank 1 first. Fails with a 403 ApiError when its owner made it private.
+export const userTopAnimeQuery = (username: string) =>
+  queryOptions({
+    queryKey: ['users', username.toLowerCase(), 'top-anime'],
+    queryFn: async () =>
+      (
+        await api<TopAnimeResponse>(
+          `/api/users/${encodeURIComponent(username)}/top-anime`
+        )
+      ).items,
+    retry: noRetryOnClientError
+  });
+
+// Prefix of every top 10 mutation's key, so each can tell when another is in flight
+export const TOP_ANIME_MUTATION_KEY = ['me', 'top-anime'];
+
+// Replaces the signed-in user's whole top 10 with these anime, in rank order, and
+// puts the saved list in the cache
+export const saveTopAnimeMutation = (queryClient: QueryClient) => {
+  const { queryKey } = myTopAnimeQuery();
+
+  return mutationOptions({
+    mutationKey: [...TOP_ANIME_MUTATION_KEY, 'save'],
+    mutationFn: async (animeIds: string[]) =>
+      (
+        await api<TopAnimeResponse>('/api/me/top-anime', {
+          method: 'PUT',
+          body: JSON.stringify({ animeIds })
+        })
+      ).items,
+    onMutate: async () => {
+      // A refetch already on its way would answer with the list from before the save
+      await queryClient.cancelQueries({ queryKey });
+    },
+    onSuccess: (items) => {
+      queryClient.setQueryData(queryKey, items);
+      // The public profile shows the same list
+      const username = queryClient.getQueryData(meQuery().queryKey)?.username;
+      if (username) {
+        queryClient.invalidateQueries({
+          queryKey: userTopAnimeQuery(username).queryKey
+        });
+      }
+    }
   });
 };

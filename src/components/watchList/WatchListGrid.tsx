@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
-import WatchListCard from './WatchListCard';
+import { Typography } from '@mui/material';
+import PosterCard from '@/components/posterCard/PosterCard';
+import PosterGrid from '@/components/posterCard/PosterGrid';
 import { WatchListItem } from '@/types';
 
 type WatchListGridProps = {
@@ -23,24 +24,15 @@ const WatchListGrid = ({
   }
 
   return (
-    <Box
-      component="ul"
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-        gap: '24px',
-        listStyle: 'none',
-        margin: 0,
-        padding: 0
-      }}>
+    <PosterGrid>
       {items.map((item) => (
-        <WatchListCard
+        <PosterCard
           key={item.animeId}
-          item={item}
+          anime={item}
           action={renderAction?.(item)}
         />
       ))}
-    </Box>
+    </PosterGrid>
   );
 };
 

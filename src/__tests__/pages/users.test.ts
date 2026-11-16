@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Database } from '@/server/db/client';
 import { createTestDb } from '@/server/db/testDb';
 import { ensureUser, updateProfile } from '@/server/users';
+import { setTopAnime } from '@/server/topAnime';
 import { addToWatchList } from '@/server/watchList';
 import { getServerSideProps } from '@/pages/users/[username]';
 
@@ -112,7 +113,73 @@ describe('getServerSideProps for /users/[username]', () => {
 
     expect(
       props.dehydratedState!.queries.map((query) => query.queryKey)
-    ).toEqual([['users', 'spike']]);
+    ).not.toContainEqual(['users', 'spike', 'watch-list']);
+    expect(JSON.stringify(props)).not.toContain('Cowboy Bebop');
+  });
+
+  it('puts a public top 10 in the query cache, in rank order', async () => {
+    await setTopAnime(
+      db,
+      'user_1',
+      { animeIds: ['6', '1'] },
+      async (ids) =>
+        new Map(
+          ids.map((id) => [
+            id,
+            {
+              title: id === '1' ? 'Cowboy Bebop' : 'Trigun',
+              posterUrl: null,
+              subtype: 'TV'
+            }
+          ])
+        )
+    );
+
+    const { props } = await render('Spike');
+
+    const list = props.dehydratedState!.queries.find(
+      (query) => query.queryKey.at(-1) === 'top-anime'
+    );
+    expect(list?.queryKey).toEqual(['users', 'spike', 'top-anime']);
+    expect(list?.state.data).toEqual([
+      {
+        rank: 1,
+        animeId: '6',
+        title: 'Trigun',
+        posterUrl: null,
+        subtype: 'TV'
+      },
+      {
+        rank: 2,
+        animeId: '1',
+        title: 'Cowboy Bebop',
+        posterUrl: null,
+        subtype: 'TV'
+      }
+    ]);
+    expect(JSON.parse(JSON.stringify(props))).toEqual(props);
+  });
+
+  it('leaves a private top 10 out of the page', async () => {
+    await setTopAnime(
+      db,
+      'user_1',
+      { animeIds: ['1'] },
+      async (ids) =>
+        new Map(
+          ids.map((id) => [
+            id,
+            { title: 'Cowboy Bebop', posterUrl: null, subtype: 'TV' }
+          ])
+        )
+    );
+    await updateProfile(db, 'user_1', { topAnimePublic: false });
+
+    const { props } = await render('spike');
+
+    expect(
+      props.dehydratedState!.queries.map((query) => query.queryKey)
+    ).not.toContainEqual(['users', 'spike', 'top-anime']);
     expect(JSON.stringify(props)).not.toContain('Cowboy Bebop');
   });
 

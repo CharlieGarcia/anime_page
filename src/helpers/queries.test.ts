@@ -4,6 +4,7 @@ import {
   EPISODES_PER_PAGE,
   RELATED_PER_PAGE,
   animeEpisodesQuery,
+  animeTitleSearchQuery,
   relatedAnimeQuery,
   searchAnimeQuery
 } from './queries';
@@ -120,6 +121,51 @@ describe('searchAnimeQuery', () => {
 
   it('does not fetch until a search has been submitted', () => {
     expect(searchAnimeQuery(null).queryFn).toBe(skipToken);
+  });
+});
+
+describe('animeTitleSearchQuery', () => {
+  it('asks Kitsu for five titles matching the text', async () => {
+    respondWith({ data: [] });
+
+    await makeClient().fetchQuery(animeTitleSearchQuery('frieren'));
+
+    const url = requestedUrl();
+    expect(url.pathname.endsWith('/anime')).toBe(true);
+    expect(url.searchParams.get('filter[text]')).toBe('frieren');
+    expect(url.searchParams.get('page[limit]')).toBe('5');
+  });
+
+  it('returns each match as an id and snapshot', async () => {
+    respondWith({
+      data: [
+        {
+          id: '46474',
+          attributes: {
+            canonicalTitle: 'Sousou no Frieren',
+            posterImage: { large: 'https://media.kitsu.app/large.jpg' },
+            subtype: 'TV'
+          }
+        }
+      ]
+    });
+
+    const result = await makeClient().fetchQuery(
+      animeTitleSearchQuery('frieren')
+    );
+
+    expect(result).toEqual([
+      {
+        animeId: '46474',
+        title: 'Sousou no Frieren',
+        posterUrl: 'https://media.kitsu.app/large.jpg',
+        subtype: 'TV'
+      }
+    ]);
+  });
+
+  it('does not fetch for empty text', () => {
+    expect(animeTitleSearchQuery('').queryFn).toBe(skipToken);
   });
 });
 
